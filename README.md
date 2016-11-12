@@ -14,8 +14,8 @@ All of then optional, you can write your own.
     import { InterceptorModule, Interceptor } from "angular-http-interceptor" 
     
     class MyInterceptor implements Interceptor {
-        requestStart(request: any) {
-            console.info("ExampleInterceptor - RequestStarted: " + request)
+        requestCreated(request: any) {
+            console.info("ExampleInterceptor - RequestCreated: " + request)
         }
 
         requestEnded(res: any) {
@@ -39,6 +39,12 @@ All of then optional, you can write your own.
     })
     export class AppModule {
 
+    }
+
+    export class AppComponent {
+        constructor(private interceptor: InterceptorHandler){
+
+        }
     }
 
 Now every request made with the oficial @angular/http Http class is intercepted

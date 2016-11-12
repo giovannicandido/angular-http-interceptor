@@ -5,7 +5,7 @@ import { CustomHttp } from "./custom-http";
 
 @Injectable()
 export abstract class Interceptor {
-  abstract requestStart(request: any);
+  abstract requestCreated(request: any);
   abstract requestEnded(response: any);
   abstract requestError(err: any);
 }
@@ -20,9 +20,9 @@ export class InterceptorHandler {
     let customHttp = <CustomHttp>http
 
     interceptors.forEach(e => {
-      let sub = customHttp.requestStarted$.subscribe((request) => {
+      let sub = customHttp.requestCreated.subscribe((request) => {
         try {
-          e.requestStart(request)
+          e.requestCreated(request)
         } catch (ex) {
           this.errorHandler(ex, e.toString())
         }
