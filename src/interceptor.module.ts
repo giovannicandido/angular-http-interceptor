@@ -3,7 +3,6 @@ import { Http, XHRBackend, RequestOptions } from "@angular/http"
 
 import { InterceptorHandler, Interceptor } from "./interceptor.handler"
 import { CustomHttp } from "./custom-http";
-import { ExampleInterceptor } from "./example-interceptor";
 
 export const providers = [
   InterceptorHandler,
