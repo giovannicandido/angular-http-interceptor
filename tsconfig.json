@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "declaration": false,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "lib": ["es6", "dom"],
@@ -8,7 +8,7 @@
     "module": "es6",
     "moduleResolution": "node",
     "outDir": "dist/",
-    "sourceMap": true,
+    "sourceMap": false,
     "target": "es5",
     "typeRoots": [
       "node_modules/@types"
