@@ -47,13 +47,13 @@ All of then optional, you can write your own.
         }
     }
 
-Now every request made with the oficial @angular/http Http class is intercepted
+Now every request made with the official @angular/http Http class is intercepted
 
 ## Background
 
 I create a subclass of Http client and override it with a custom provider.
 
-The CustomHttp class, create 3 EventEmitters and emit events for **requestStarted**,
+The CustomHttp class, create 3 EventEmitter's and emit events for **requestStarted**,
 **requestEnded** and **requestError**. 
 
 All interceptors methods are called asynchronously, there is NO guarentee of order of course.
