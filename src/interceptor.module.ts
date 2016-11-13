@@ -1,7 +1,7 @@
-import { NgModule } from "@angular/core"
-import { Http, XHRBackend, RequestOptions } from "@angular/http"
+import { NgModule } from "@angular/core";
+import { Http, XHRBackend, RequestOptions } from "@angular/http";
 
-import { InterceptorHandler, Interceptor } from "./interceptor.handler"
+import { InterceptorHandler } from "./interceptor.handler";
 import { CustomHttp } from "./custom-http";
 
 export const providers = [
@@ -12,7 +12,7 @@ export const providers = [
       new CustomHttp(xhrBackend, requestOptions),
     deps: [XHRBackend, RequestOptions]
   }
-]
+];
 
 @NgModule({
   providers: providers,

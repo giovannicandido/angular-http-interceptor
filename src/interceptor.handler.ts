@@ -17,41 +17,41 @@ export class InterceptorHandler {
 
   constructor( @Inject(Interceptor) private interceptors: Interceptor[], private http: Http) {
     this.subscriptions = [];
-    let customHttp = <CustomHttp>http
+    let customHttp = <CustomHttp>http;
 
     interceptors.forEach(e => {
       let sub = customHttp.requestCreated$.subscribe((request) => {
         try {
-          e.requestCreated(request)
+          e.requestCreated(request);
         } catch (ex) {
-          this.errorHandler(ex, e.toString())
+          this.errorHandler(ex, e.toString());
         }
 
-      })
+      });
       this.subscriptions.push(sub);
       sub = customHttp.requestEnded$.subscribe((response) => {
         try {
-          e.requestEnded(response)
+          e.requestEnded(response);
         } catch (ex) {
           this.errorHandler(ex, e.toString());
         }
-      })
+      });
       this.subscriptions.push(sub);
       sub = customHttp.requestError$.subscribe((err) => {
         try {
-          e.requestError(err)
+          e.requestError(err);
 
         } catch (ex) {
           this.errorHandler(ex, e.toString());
         }
-      })
+      });
 
       this.subscriptions.push(sub);
-    })
+    });
   }
 
   errorHandler(exception: any, interceptor: string) {
-    console.error(`Inteceptor ${interceptor} throw a exception: ${exception}`)
+    console.error(`Inteceptor ${interceptor} throw a exception: ${exception}`);
   }
 
   dispose() {

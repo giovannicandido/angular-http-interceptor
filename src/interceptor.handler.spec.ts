@@ -1,13 +1,12 @@
 import { Component } from "@angular/core";
-import { HttpModule, XHRBackend, ConnectionBackend, 
-  RequestOptions,
-  ResponseOptions, Response, Http } from "@angular/http";
+import {
+  XHRBackend, ConnectionBackend, RequestOptions,
+  ResponseOptions, Response, Http
+} from "@angular/http";
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from '@angular/core/testing';
-import { By } from "@angular/platform-browser"
-import { MockBackend, MockConnection } from "@angular/http/testing"
+import { MockBackend, MockConnection } from "@angular/http/testing";
 
-import { InterceptorHandler, Interceptor, InterceptorModule } from "./index"
-import { Observable } from "rxjs/Observable";
+import { InterceptorHandler, Interceptor, InterceptorModule } from "./index";
 
 
 class CustomInterceptor implements Interceptor {
@@ -18,21 +17,20 @@ class CustomInterceptor implements Interceptor {
     this.requestCreatedCalled = true;
   }
   requestEnded(response: any) {
-    this.requestEndedCalled = true
+    this.requestEndedCalled = true;
   }
   requestError(err: any) {
-    this.requestErrorCalled = true
+    this.requestErrorCalled = true;
   }
 }
 
 describe('interceptor.handler', () => {
   let fixture: ComponentFixture<AppComponent>;
   let comp: AppComponent;
-  let customInterceptor = new CustomInterceptor()
-  let customInterceptor2 = new CustomInterceptor()
-  let requestOptions = new RequestOptions()
+  let customInterceptor = new CustomInterceptor();
+  let customInterceptor2 = new CustomInterceptor();
+  let requestOptions = new RequestOptions();
   beforeEach(() => {
-
     //   // refine the test module by declaring the test component
     TestBed.configureTestingModule({
       imports: [
@@ -52,15 +50,14 @@ describe('interceptor.handler', () => {
           provide: Interceptor,
           useValue: customInterceptor,
           multi: true
-        },{
+        }, {
           provide: Interceptor,
           useValue: customInterceptor2,
           multi: true
-        },{
+        }, {
           provide: XHRBackend,
           useExisting: MockBackend
         }
-
       ]
     });
 
@@ -74,37 +71,37 @@ describe('interceptor.handler', () => {
 
   it('should call interceptor on request', fakeAsync(
     inject([ConnectionBackend, Http], (backend, http) => {
-      let body = JSON.stringify({ success: true })
+      let body = JSON.stringify({ success: true });
       backend.connections.subscribe((connection: MockConnection) => {
         let options = new ResponseOptions({
           body: body
         });
         connection.mockRespond(new Response(options));
-      })
-    
-      http.get("fake").subscribe()
+      });
+
+      http.get("fake").subscribe();
       tick(10);
-      expect(customInterceptor.requestCreatedCalled).toBeTruthy()
-      expect(customInterceptor.requestEndedCalled).toBeTruthy()
+      expect(customInterceptor.requestCreatedCalled).toBeTruthy();
+      expect(customInterceptor.requestEndedCalled).toBeTruthy();
     })
   ));
 
   it('should call all interceptors on request', fakeAsync(
     inject([ConnectionBackend, Http], (backend, http) => {
-      let body = JSON.stringify({ success: true })
+      let body = JSON.stringify({ success: true });
       backend.connections.subscribe((connection: MockConnection) => {
         let options = new ResponseOptions({
           body: body
         });
         connection.mockRespond(new Response(options));
-      })
-    
-      http.get("fake").subscribe()
+      });
+
+      http.get("fake").subscribe();
       tick(10);
-      expect(customInterceptor.requestCreatedCalled).toBeTruthy()
-      expect(customInterceptor.requestEndedCalled).toBeTruthy()
-      expect(customInterceptor2.requestCreatedCalled).toBeTruthy()
-      expect(customInterceptor2.requestEndedCalled).toBeTruthy()
+      expect(customInterceptor.requestCreatedCalled).toBeTruthy();
+      expect(customInterceptor.requestEndedCalled).toBeTruthy();
+      expect(customInterceptor2.requestCreatedCalled).toBeTruthy();
+      expect(customInterceptor2.requestEndedCalled).toBeTruthy();
     })
   ));
 });

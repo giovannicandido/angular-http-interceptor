@@ -2,9 +2,9 @@ import {Http, Request, RequestOptionsArgs, Response, RequestOptions, ConnectionB
 import {EventEmitter, Injectable} from "@angular/core";
 
 import {Observable} from "rxjs/Observable";
-import "rxjs/add/operator/do"
-import "rxjs/add/observable/throw"
-import "rxjs/add/operator/catch"
+import "rxjs/add/operator/do";
+import "rxjs/add/observable/throw";
+import "rxjs/add/operator/catch";
 
 @Injectable()
 export class CustomHttp extends Http {
@@ -14,9 +14,9 @@ export class CustomHttp extends Http {
 
   constructor(backend: ConnectionBackend, defaultOptions: RequestOptions) {
     super(backend, defaultOptions);
-    this.requestCreated$ = new EventEmitter()
-    this.requestEnded$ = new EventEmitter()
-    this.requestError$ = new EventEmitter()
+    this.requestCreated$ = new EventEmitter();
+    this.requestEnded$ = new EventEmitter();
+    this.requestError$ = new EventEmitter();
   }
 
   request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
@@ -30,7 +30,7 @@ export class CustomHttp extends Http {
     }).catch((err: Response, source) => {
       this.requestError$.emit(err);
       // TODO Is safe to do?
-      return Observable.throw(err)
+      return Observable.throw(err);
     });
   }
 
