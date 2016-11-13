@@ -1,5 +1,7 @@
 # angular-http-interceptor
 
+![Build Status](https://travis-ci.org/atende/angular-http-interceptor.svg?branch=master)
+
 A Single point of extension for Http Interceptors in angular 2 projects
 
 The big advantage is that you can provide your Interceptors very easilly,
