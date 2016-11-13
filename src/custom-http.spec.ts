@@ -1,15 +1,20 @@
 import { Component } from "@angular/core";
-import { HttpModule, ConnectionBackend } from "@angular/http";
+import { HttpModule, XHRBackend, ConnectionBackend, ResponseOptions, Response } from "@angular/http";
 import { BrowserModule } from '@angular/platform-browser';
-import { async, TestBed, ComponentFixture } from '@angular/core/testing';
+import { fakeAsync, TestBed, ComponentFixture, inject, tick } from '@angular/core/testing';
 import { By } from "@angular/platform-browser"
-import { MockBackend } from "@angular/http/testing"
+import { MockBackend, MockConnection } from "@angular/http/testing"
 
 import { CustomHttp } from "./custom-http"
+import {Observable} from "rxjs/Observable";
+
+import "rxjs/add/operator/catch";
+import "rxjs/add/observable/of";
 
 describe('custom-http', () => {
   let fixture: ComponentFixture<AppComponent>;
-  let comp;
+  let comp: AppComponent;
+
   beforeEach(() => {
 
     //   // refine the test module by declaring the test component
@@ -24,7 +29,7 @@ describe('custom-http', () => {
           provide: ConnectionBackend,
           useClass: MockBackend
         }
-      
+
       ]
     });
 
@@ -35,13 +40,66 @@ describe('custom-http', () => {
     comp = fixture.componentInstance;
 
   });
-  it('should create hello world component', () => {
+  it('should inject CustomHttp in hello world component', () => {
 
     fixture.detectChanges();
     let debugElement = fixture.debugElement.query(By.css("h1"))
     let element = debugElement.nativeElement;
     expect(element.textContent).toContain('Hello')
+    expect(comp.customHttp).not.toBeNull()
   });
+
+  it('should emit requestCreated event', (done) =>{
+    comp.customHttp.requestCreated$.subscribe(e => {
+      expect(e).not.toBeNull()
+      console.info(">>> RequestCreated")
+      done()
+    })
+
+    comp.customHttp.get("fake")
+  })
+
+  it('should emit requestEnded event', fakeAsync(
+     inject( [ConnectionBackend],  (backend) => {
+       let body = JSON.stringify({ success: true })
+        backend.connections.subscribe((connection: MockConnection) => {
+          let options = new ResponseOptions({
+            body: body
+          });
+          connection.mockRespond(new Response(options));
+        })
+        let called = false;
+        comp.customHttp.requestEnded$.subscribe(e => {
+          expect(e).not.toBeNull()
+          expect(e.text()).toEqual(body);
+          called = true;
+        })
+        comp.customHttp.get("fake").subscribe()
+        tick(10);
+        expect(called).toBeTruthy()
+    })
+  ));
+
+  it('should emit requestError event', fakeAsync(
+  
+  inject([ConnectionBackend], (backend: MockBackend) => {
+    backend.connections.subscribe((connection: MockConnection) => {
+      let options = new ResponseOptions({
+        status: 500,
+        body: JSON.stringify({ success: true })
+      });
+      connection.mockError(new Error("Response error"));
+    })
+    let called = false;
+    comp.customHttp.requestError$.subscribe(e => {
+      expect(e).not.toBeNull()
+      called = true;
+    })
+    comp.customHttp.get("fake").catch((e, c) => Observable.of(e)).subscribe()
+    tick(10)
+    expect(called).toBeTruthy()
+    
+  })))
 });
 
 @Component({

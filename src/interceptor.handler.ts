@@ -20,7 +20,7 @@ export class InterceptorHandler {
     let customHttp = <CustomHttp>http
 
     interceptors.forEach(e => {
-      let sub = customHttp.requestCreated.subscribe((request) => {
+      let sub = customHttp.requestCreated$.subscribe((request) => {
         try {
           e.requestCreated(request)
         } catch (ex) {

@@ -8,19 +8,19 @@ import "rxjs/add/operator/catch"
 
 @Injectable()
 export class CustomHttp extends Http {
-  public requestCreated: EventEmitter<any>;
+  public requestCreated$: EventEmitter<any>;
   public requestEnded$: EventEmitter<any>;
   public requestError$: EventEmitter<any>;
 
   constructor(backend: ConnectionBackend, defaultOptions: RequestOptions) {
     super(backend, defaultOptions);
-    this.requestCreated = new EventEmitter()
+    this.requestCreated$ = new EventEmitter()
     this.requestEnded$ = new EventEmitter()
     this.requestError$ = new EventEmitter()
   }
 
   request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
-    this.requestCreated.emit(url);
+    this.requestCreated$.emit(url);
     return this.intercept(super.request(url, options));
   }
 
