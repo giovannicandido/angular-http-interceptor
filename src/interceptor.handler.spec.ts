@@ -29,6 +29,7 @@ describe('interceptor.handler', () => {
   let fixture: ComponentFixture<AppComponent>;
   let comp: AppComponent;
   let customInterceptor = new CustomInterceptor()
+  let customInterceptor2 = new CustomInterceptor()
   let requestOptions = new RequestOptions()
   beforeEach(() => {
 
@@ -50,6 +51,10 @@ describe('interceptor.handler', () => {
         }, {
           provide: Interceptor,
           useValue: customInterceptor,
+          multi: true
+        },{
+          provide: Interceptor,
+          useValue: customInterceptor2,
           multi: true
         },{
           provide: XHRBackend,
@@ -81,6 +86,25 @@ describe('interceptor.handler', () => {
       tick(10);
       expect(customInterceptor.requestCreatedCalled).toBeTruthy()
       expect(customInterceptor.requestEndedCalled).toBeTruthy()
+    })
+  ));
+
+  it('should call all interceptors on request', fakeAsync(
+    inject([ConnectionBackend, Http], (backend, http) => {
+      let body = JSON.stringify({ success: true })
+      backend.connections.subscribe((connection: MockConnection) => {
+        let options = new ResponseOptions({
+          body: body
+        });
+        connection.mockRespond(new Response(options));
+      })
+    
+      http.get("fake").subscribe()
+      tick(10);
+      expect(customInterceptor.requestCreatedCalled).toBeTruthy()
+      expect(customInterceptor.requestEndedCalled).toBeTruthy()
+      expect(customInterceptor2.requestCreatedCalled).toBeTruthy()
+      expect(customInterceptor2.requestEndedCalled).toBeTruthy()
     })
   ));
 });
