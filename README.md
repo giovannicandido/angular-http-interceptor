@@ -41,9 +41,20 @@ All of then optional, you can write your own.
 
     }
 
+    /**
+     * To activate you need to inject the InterceptorHandler somewhere
+     * AppComponent is a good place
+     */
     export class AppComponent {
-        constructor(private interceptor: InterceptorHandler){
+        constructor(private http: Http, private interceptorHandler: InterceptorHandler){
 
+        }
+       
+        ngOnInit(){
+            // this will be intercepted
+            this.http.get("interceptor").subscribe(r => {
+                console.log("Intercepted")
+            });
         }
     }
 
