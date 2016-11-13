@@ -1,6 +1,5 @@
 import { Component } from "@angular/core";
 import { HttpModule, XHRBackend, ConnectionBackend, ResponseOptions, Response } from "@angular/http";
-import { BrowserModule } from '@angular/platform-browser';
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from '@angular/core/testing';
 import { By } from "@angular/platform-browser"
 import { MockBackend, MockConnection } from "@angular/http/testing"
@@ -52,7 +51,6 @@ describe('custom-http', () => {
   it('should emit requestCreated event', (done) =>{
     comp.customHttp.requestCreated$.subscribe(e => {
       expect(e).not.toBeNull()
-      console.info(">>> RequestCreated")
       done()
     })
 
@@ -96,6 +94,27 @@ describe('custom-http', () => {
       called = true;
     })
     comp.customHttp.get("fake").catch((e, c) => Observable.of(e)).subscribe()
+    tick(10)
+    expect(called).toBeTruthy()
+    
+  })))
+
+  xit('should emit requestError event without a catch', fakeAsync(
+  
+  inject([ConnectionBackend], (backend: MockBackend) => {
+    backend.connections.subscribe((connection: MockConnection) => {
+      let options = new ResponseOptions({
+        status: 500,
+        body: JSON.stringify({ success: true })
+      });
+      connection.mockError(new Error("Response error"));
+    })
+    let called = false;
+    comp.customHttp.requestError$.subscribe(e => {
+      expect(e).not.toBeNull()
+      called = true;
+    })
+    comp.customHttp.get("fake").subscribe()
     tick(10)
     expect(called).toBeTruthy()
     
