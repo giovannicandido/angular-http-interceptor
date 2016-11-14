@@ -136,7 +136,7 @@ describe('dialog-service', () => {
         })
     ));
 
-    it('should call requestError message', fakeAsync(
+    it('should call requestError on 500', fakeAsync(
         inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
             let body = "Server error";
             backend.connections.subscribe((connection: MockConnection) => {
