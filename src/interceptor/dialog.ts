@@ -34,14 +34,17 @@ export class DialogInterceptor implements Interceptor {
                 || this.isHeaderStartsWithValue(response, 'Content-Type', 'text/html')))) {
             this.dialog.showMessage(response.text(), 'info');
         }
-    }
-    requestError(err: any) {
-        if (err.status >= 500 && err.status < 600) {
-            this.dialog.showError(err.text(), err.status);
-        } else if (err.status >= 400 && err.status < 500) {
-            this.dialog.showError(err.text(), err.status);
+
+        if (response.status >= 500 && response.status < 600) {
+            this.dialog.showError(response.text(), response.status);
+        } else if (response.status >= 400 && response.status < 500) {
+            this.dialog.showError(response.text(), response.status);
 
         }
+
+    }
+    requestError(err: any) {
+        
     }
 
     isHeaderStartsWithValue(response: Response, header: string, value: string): boolean {

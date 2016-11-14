@@ -50,7 +50,7 @@ describe('dialog-service', () => {
     });
 
 
-    it('should create a dialog in ok response with responseText', fakeAsync(
+    it('should call a dialog in ok response with responseText', fakeAsync(
         inject([ConnectionBackend, DialogService, Http], (backend, dialog, http) => {
             let body = "Message";
             backend.connections.subscribe((connection: MockConnection) => {
@@ -71,6 +71,114 @@ describe('dialog-service', () => {
         })
     ));
 
+    it('should call a dialog in created response with responseText', fakeAsync(
+        inject([ConnectionBackend, DialogService, Http], (backend, dialog, http) => {
+            let body = "Message";
+            backend.connections.subscribe((connection: MockConnection) => {
+                let options = new ResponseOptions({
+                    status: 201,
+                    body: body,
+                    headers: new Headers({
+                        'Content-Type': "text/html"
+                    })
+                });
+                connection.mockRespond(new Response(options));
+            });
+
+            spyOn(dialog, 'showMessage');
+            http.get("fake").subscribe();
+            tick(10);
+            expect(dialog.showMessage).toHaveBeenCalledWith(body, 'info');
+        })
+    ));
+
+    it('should NOT call dialog in ok response with JSON body', fakeAsync(
+        inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
+            let body = JSON.stringify({success: true})
+            backend.connections.subscribe((connection: MockConnection) => {
+                let options = new ResponseOptions({
+                    status: 200,
+                    body: body,
+                    headers: new Headers({
+                        'Content-Type':'application/json'
+                    })
+                })
+                connection.mockRespond(new Response(options))
+            }) 
+
+            spyOn(dialog, 'showMessage');
+            http.get("fake").subscribe();
+            tick(10)
+            expect(dialog.showMessage).not.toHaveBeenCalled();
+        })
+    ));
+
+     it('should call dialog in ok response with text/plain', fakeAsync(
+        inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
+            let body = JSON.stringify({success: true})
+            backend.connections.subscribe((connection: MockConnection) => {
+                let options = new ResponseOptions({
+                    status: 200,
+                    body: body,
+                    headers: new Headers({
+                        'Content-Type':'text/plain'
+                    })
+                })
+                connection.mockRespond(new Response(options))
+            }) 
+
+            spyOn(dialog, 'showMessage');
+            http.get("fake").subscribe();
+            tick(10)
+            expect(dialog.showMessage).toHaveBeenCalled();
+        })
+    ));
+
+    it('should call requestError message', fakeAsync(
+        inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
+            let body = "Server error";
+            backend.connections.subscribe((connection: MockConnection) => {
+                let options = new ResponseOptions({
+                    status: 500,
+                    body: body,
+                    headers: new Headers({
+                        'Content-Type': 'text/plain'
+                    })
+                })
+                connection.mockRespond(new Response(options))
+            }) 
+
+            spyOn(dialog, 'showMessage');
+            spyOn(dialog, 'showError');
+            http.get("fake").subscribe();
+            tick(10)
+            expect(dialog.showMessage).not.toHaveBeenCalled();
+            expect(dialog.showError).toHaveBeenCalledWith(body, 500);
+        })
+    ));
+
+        it('should call requestError on 404', fakeAsync(
+        inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
+            let body = "Not Found";
+            backend.connections.subscribe((connection: MockConnection) => {
+                let options = new ResponseOptions({
+                    status: 404,
+                    body: body,
+                    headers: new Headers({
+                        'Content-Type':'text/plain'
+                    })
+                })
+                connection.mockRespond(new Response(options))
+            }) 
+
+            spyOn(dialog, 'showMessage');
+            spyOn(dialog, 'showError');
+            http.get("fake").subscribe();
+            tick(10)
+            expect(dialog.showMessage).not.toHaveBeenCalled();
+            expect(dialog.showError).toHaveBeenCalledWith(body, 404);
+        })
+    ));
 
 });
 
