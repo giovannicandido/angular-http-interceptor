@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Request, Response } from "@angular/http";
+import { Response } from "@angular/http";
 
 import { Interceptor } from "../interceptor.handler";
 
@@ -12,7 +12,6 @@ declare var UIkit: any;
  */
 @Injectable()
 export class DialogService {
-  
     showMessage(message: string, status: string) {
         UIkit.notify(message, status);
     }
@@ -24,9 +23,7 @@ export class DialogService {
 
 @Injectable()
 export class DialogInterceptor implements Interceptor {
-
     constructor(private dialog: DialogService) {
-
     }
     requestCreated(request: any) {
 
@@ -35,20 +32,20 @@ export class DialogInterceptor implements Interceptor {
         if (response.status >= 200 && response.status < 300
             && (response.text() != null && (this.isHeaderStartsWithValue(response, 'Content-Type', 'text/plain')
                 || this.isHeaderStartsWithValue(response, 'Content-Type', 'text/html')))) {
-            this.dialog.showMessage(response.text(), 'info')
+            this.dialog.showMessage(response.text(), 'info');
         }
     }
     requestError(err: any) {
         if (err.status >= 500 && err.status < 600) {
-            this.dialog.showError(err.text(), err.status)
+            this.dialog.showError(err.text(), err.status);
         } else if (err.status >= 400 && err.status < 500) {
-            this.dialog.showError(err.text(), err.status)
+            this.dialog.showError(err.text(), err.status);
 
         }
     }
 
     isHeaderStartsWithValue(response: Response, header: string, value: string): boolean {
-        return response.headers.has(header) && response.headers.get(header).startsWith(value)
+        return response.headers.has(header) && response.headers.get(header).startsWith(value);
     }
 
 }

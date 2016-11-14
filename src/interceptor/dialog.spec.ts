@@ -1,13 +1,11 @@
 import { Component } from "@angular/core";
-import { HttpModule, ConnectionBackend, RequestOptions, Headers, ResponseOptions, Response, Http, XHRBackend } from "@angular/http";
+import { ConnectionBackend, RequestOptions, Headers, ResponseOptions, Response, Http, XHRBackend } from "@angular/http";
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
-import { By } from "@angular/platform-browser";
 import { MockBackend, MockConnection } from "@angular/http/testing";
 
 import { DialogService, DialogInterceptor } from "./dialog";
 import { InterceptorModule } from "../interceptor.module";
 import { Interceptor, InterceptorHandler } from "../interceptor.handler";
-import { Observable } from "rxjs/Observable";
 
 import "rxjs/add/operator/catch";
 import "rxjs/add/observable/of";
@@ -26,20 +24,19 @@ describe('dialog-service', () => {
             declarations: [AppComponent],
             providers: [
                 MockBackend,
-                DialogService,
-                { 
-                    provide: RequestOptions, 
-                    useValue: requestOptions
+                DialogService, {
+                  provide: RequestOptions,
+                  useValue: requestOptions
                 }, {
-                    provide: Interceptor,
-                    useClass: DialogInterceptor,
-                    multi: true
+                  provide: Interceptor,
+                  useClass: DialogInterceptor,
+                  multi: true
                 }, {
-                    provide: ConnectionBackend,
-                    useExisting: MockBackend
+                  provide: ConnectionBackend,
+                  useExisting: MockBackend
                 }, {
-                    provide: XHRBackend,
-                    useExisting: MockBackend
+                  provide: XHRBackend,
+                  useExisting: MockBackend
                 }
             ]
         });
@@ -67,7 +64,7 @@ describe('dialog-service', () => {
                 connection.mockRespond(new Response(options));
             });
 
-            spyOn(dialog, 'showMessage')
+            spyOn(dialog, 'showMessage');
             http.get("fake").subscribe();
             tick(10);
             expect(dialog.showMessage).toHaveBeenCalledWith(body, 'info');
