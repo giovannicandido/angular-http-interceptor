@@ -223,7 +223,7 @@ describe('dialog-service', () => {
         })
     ));
 
-    it('should work with contet-type header value with uft-8', fakeAsync(
+    it('should work with contet-type header value with UTF-8', fakeAsync(
         inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
             let body = "Not Found";
 
@@ -232,7 +232,7 @@ describe('dialog-service', () => {
                     status: 404,
                     body: body,
                     headers: new Headers({
-                        'content-type': 'text/html;charset=utf-8'
+                        'content-type': 'text/html;charset=UTF-8'
                     })
                 });
                 connection.mockRespond(new Response(options));
