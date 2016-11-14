@@ -78,11 +78,12 @@ describe('interceptor.handler', () => {
         });
         connection.mockRespond(new Response(options));
       });
-
+      spyOn(customInterceptor,'requestCreated');
+      spyOn(customInterceptor,'requestEnded');
       http.get("fake").subscribe();
       tick(10);
-      expect(customInterceptor.requestCreatedCalled).toBeTruthy();
-      expect(customInterceptor.requestEndedCalled).toBeTruthy();
+      expect(customInterceptor.requestCreated).toHaveBeenCalled();
+      expect(customInterceptor.requestEnded).toHaveBeenCalled();
     })
   ));
 
