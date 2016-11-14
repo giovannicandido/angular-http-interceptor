@@ -25,18 +25,18 @@ describe('dialog-service', () => {
             providers: [
                 MockBackend,
                 DialogService, {
-                  provide: RequestOptions,
-                  useValue: requestOptions
+                    provide: RequestOptions,
+                    useValue: requestOptions
                 }, {
-                  provide: Interceptor,
-                  useClass: DialogInterceptor,
-                  multi: true
+                    provide: Interceptor,
+                    useClass: DialogInterceptor,
+                    multi: true
                 }, {
-                  provide: ConnectionBackend,
-                  useExisting: MockBackend
+                    provide: ConnectionBackend,
+                    useExisting: MockBackend
                 }, {
-                  provide: XHRBackend,
-                  useExisting: MockBackend
+                    provide: XHRBackend,
+                    useExisting: MockBackend
                 }
             ]
         });
@@ -94,17 +94,17 @@ describe('dialog-service', () => {
 
     it('should NOT call dialog in ok response with JSON body', fakeAsync(
         inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
-            let body = JSON.stringify({success: true})
+            let body = JSON.stringify({ success: true })
             backend.connections.subscribe((connection: MockConnection) => {
                 let options = new ResponseOptions({
                     status: 200,
                     body: body,
                     headers: new Headers({
-                        'Content-Type':'application/json'
+                        'Content-Type': 'application/json'
                     })
                 })
                 connection.mockRespond(new Response(options))
-            }) 
+            })
 
             spyOn(dialog, 'showMessage');
             http.get("fake").subscribe();
@@ -113,19 +113,19 @@ describe('dialog-service', () => {
         })
     ));
 
-     it('should call dialog in ok response with text/plain', fakeAsync(
+    it('should call dialog in ok response with text/plain', fakeAsync(
         inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
-            let body = JSON.stringify({success: true})
+            let body = JSON.stringify({ success: true })
             backend.connections.subscribe((connection: MockConnection) => {
                 let options = new ResponseOptions({
                     status: 200,
                     body: body,
                     headers: new Headers({
-                        'Content-Type':'text/plain'
+                        'Content-Type': 'text/plain'
                     })
                 })
                 connection.mockRespond(new Response(options))
-            }) 
+            })
 
             spyOn(dialog, 'showMessage');
             http.get("fake").subscribe();
@@ -146,7 +146,7 @@ describe('dialog-service', () => {
                     })
                 })
                 connection.mockRespond(new Response(options))
-            }) 
+            })
 
             spyOn(dialog, 'showMessage');
             spyOn(dialog, 'showError');
@@ -157,7 +157,7 @@ describe('dialog-service', () => {
         })
     ));
 
-        it('should call requestError on 404', fakeAsync(
+    it('should call requestError on 404', fakeAsync(
         inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
             let body = "Not Found";
             backend.connections.subscribe((connection: MockConnection) => {
@@ -165,11 +165,11 @@ describe('dialog-service', () => {
                     status: 404,
                     body: body,
                     headers: new Headers({
-                        'Content-Type':'text/plain'
+                        'Content-Type': 'text/plain'
                     })
                 })
                 connection.mockRespond(new Response(options))
-            }) 
+            })
 
             spyOn(dialog, 'showMessage');
             spyOn(dialog, 'showError');
