@@ -249,8 +249,8 @@ describe('dialog-service', () => {
 
     it('should implement toString', () => {
         let dialogInterceptor = new DialogInterceptor(null);
-        expect(dialogInterceptor.toString()).toEqual("DialogInterceptor")
-    })
+        expect(dialogInterceptor.toString()).toEqual("DialogInterceptor");
+    });
 
 });
 
