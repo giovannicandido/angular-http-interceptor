@@ -91,7 +91,7 @@ describe('custom-http', () => {
     expect(called).toBeTruthy();
   })));
 
-  xit('should emit requestError event without a catch', fakeAsync(
+  it('should emit requestError event without a catch', fakeAsync(
   inject([ConnectionBackend], (backend: MockBackend) => {
     backend.connections.subscribe((connection: MockConnection) => {
       connection.mockError(new Error("Response error"));

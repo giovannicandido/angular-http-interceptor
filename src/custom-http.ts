@@ -29,8 +29,7 @@ export class CustomHttp extends Http {
       this.requestEnded$.emit(res);
     }).catch((err: Response, source) => {
       this.requestError$.emit(err);
-      // TODO Is safe to do?
-      return Observable.throw(err);
+      return Observable.of(err);
     });
   }
 

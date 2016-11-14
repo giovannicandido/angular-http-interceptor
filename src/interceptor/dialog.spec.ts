@@ -7,6 +7,8 @@ import { DialogService, DialogInterceptor } from "./dialog";
 import { InterceptorModule } from "../interceptor.module";
 import { Interceptor, InterceptorHandler } from "../interceptor.handler";
 
+import { Observable } from "rxjs/Observable";
+
 import "rxjs/add/operator/catch";
 import "rxjs/add/observable/of";
 
@@ -94,7 +96,7 @@ describe('dialog-service', () => {
 
     it('should NOT call dialog in ok response with JSON body', fakeAsync(
         inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
-            let body = JSON.stringify({ success: true })
+            let body = JSON.stringify({ success: true });
             backend.connections.subscribe((connection: MockConnection) => {
                 let options = new ResponseOptions({
                     status: 200,
@@ -102,20 +104,20 @@ describe('dialog-service', () => {
                     headers: new Headers({
                         'Content-Type': 'application/json'
                     })
-                })
-                connection.mockRespond(new Response(options))
-            })
+                });
+                connection.mockRespond(new Response(options));
+            });
 
             spyOn(dialog, 'showMessage');
             http.get("fake").subscribe();
-            tick(10)
+            tick(10);
             expect(dialog.showMessage).not.toHaveBeenCalled();
         })
     ));
 
     it('should call dialog in ok response with text/plain', fakeAsync(
         inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
-            let body = JSON.stringify({ success: true })
+            let body = JSON.stringify({ success: true });
             backend.connections.subscribe((connection: MockConnection) => {
                 let options = new ResponseOptions({
                     status: 200,
@@ -123,13 +125,13 @@ describe('dialog-service', () => {
                     headers: new Headers({
                         'Content-Type': 'text/plain'
                     })
-                })
-                connection.mockRespond(new Response(options))
-            })
+                });
+                connection.mockRespond(new Response(options));
+            });
 
             spyOn(dialog, 'showMessage');
             http.get("fake").subscribe();
-            tick(10)
+            tick(10);
             expect(dialog.showMessage).toHaveBeenCalled();
         })
     ));
@@ -144,14 +146,14 @@ describe('dialog-service', () => {
                     headers: new Headers({
                         'Content-Type': 'text/plain'
                     })
-                })
-                connection.mockRespond(new Response(options))
-            })
+                });
+                connection.mockRespond(new Response(options));
+            });
 
             spyOn(dialog, 'showMessage');
             spyOn(dialog, 'showError');
             http.get("fake").subscribe();
-            tick(10)
+            tick(10);
             expect(dialog.showMessage).not.toHaveBeenCalled();
             expect(dialog.showError).toHaveBeenCalledWith(body, 500);
         })
@@ -167,14 +169,79 @@ describe('dialog-service', () => {
                     headers: new Headers({
                         'Content-Type': 'text/plain'
                     })
-                })
-                connection.mockRespond(new Response(options))
-            })
+                });
+                connection.mockRespond(new Response(options));
+            });
 
             spyOn(dialog, 'showMessage');
             spyOn(dialog, 'showError');
             http.get("fake").subscribe();
-            tick(10)
+            tick(10);
+            expect(dialog.showMessage).not.toHaveBeenCalled();
+            expect(dialog.showError).toHaveBeenCalledWith(body, 404);
+        })
+    ));
+
+    it('should call requestError on exception', fakeAsync(
+        inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
+            let exception = new Error('Exception throw');
+
+            backend.connections.subscribe((connection: MockConnection) => {
+                connection.mockError(exception);
+            });
+
+            spyOn(dialog, 'showMessage');
+            spyOn(dialog, 'showError');
+            http.get("fake").catch(e => Observable.of(e)).subscribe();
+            tick(10);
+            expect(dialog.showMessage).not.toHaveBeenCalled();
+            expect(dialog.showError).toHaveBeenCalledWith(exception, 'error');
+        })
+    ));
+
+    it('should work with contet-type header in lower case', fakeAsync(
+        inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
+            let body = "Not Found";
+
+            backend.connections.subscribe((connection: MockConnection) => {
+                let options = new ResponseOptions({
+                    status: 404,
+                    body: body,
+                    headers: new Headers({
+                        'content-type': 'text/plain'
+                    })
+                });
+                connection.mockRespond(new Response(options));
+            });
+
+            spyOn(dialog, 'showMessage');
+            spyOn(dialog, 'showError');
+            http.get("fake").catch(e => Observable.of(e)).subscribe();
+            tick(10);
+            expect(dialog.showMessage).not.toHaveBeenCalled();
+            expect(dialog.showError).toHaveBeenCalledWith(body, 404);
+        })
+    ));
+
+    it('should work with contet-type header value with uft-8', fakeAsync(
+        inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
+            let body = "Not Found";
+
+            backend.connections.subscribe((connection: MockConnection) => {
+                let options = new ResponseOptions({
+                    status: 404,
+                    body: body,
+                    headers: new Headers({
+                        'content-type': 'text/html;charset=utf-8'
+                    })
+                });
+                connection.mockRespond(new Response(options));
+            });
+
+            spyOn(dialog, 'showMessage');
+            spyOn(dialog, 'showError');
+            http.get("fake").catch(e => Observable.of(e)).subscribe();
+            tick(10);
             expect(dialog.showMessage).not.toHaveBeenCalled();
             expect(dialog.showError).toHaveBeenCalledWith(body, 404);
         })

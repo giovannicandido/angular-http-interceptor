@@ -44,7 +44,7 @@ export class DialogInterceptor implements Interceptor {
 
     }
     requestError(err: any) {
-        
+        this.dialog.showError(err, 'error');
     }
 
     isHeaderStartsWithValue(response: Response, header: string, value: string): boolean {
