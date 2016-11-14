@@ -51,4 +51,8 @@ export class DialogInterceptor implements Interceptor {
         return response.headers.has(header) && response.headers.get(header).startsWith(value);
     }
 
+    toString(){
+        return "DialogInterceptor";
+    }
+
 }
