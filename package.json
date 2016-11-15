@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "tslint ./src/**/*.ts -t verbose",
+    "lint:fix": "tslint ./src/**/*.ts --fix",
     "test": "tsc && concurrently \"tsc -w\" \"karma start karma.conf.js\"",
     "test-once": "tsc && karma start karma.conf.js --single-run",
     "compile": "tsc",

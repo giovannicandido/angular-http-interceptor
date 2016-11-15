@@ -19,6 +19,10 @@ export class DialogService {
     showError(message: string, status: string) {
         UIkit.modal.alert(message);
     }
+
+    confirm(message: string, func: () => void) {
+        UIkit.confirm(message, func);
+    }
 }
 
 @Injectable()

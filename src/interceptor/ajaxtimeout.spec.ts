@@ -1,0 +1,120 @@
+import { Component } from "@angular/core";
+import { ConnectionBackend, RequestOptions, Headers, ResponseOptions, Response, Http, XHRBackend } from "@angular/http";
+import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
+import { MockBackend, MockConnection } from "@angular/http/testing";
+
+import { AjaxTimeoutInterceptor, LoginService } from "./ajaxtimeout";
+import { InterceptorModule } from "../interceptor.module";
+import { Interceptor, InterceptorHandler } from "../interceptor.handler";
+
+
+let requestOptions = new RequestOptions();
+
+class LoginServiceMock implements LoginService {
+    login() {
+    }
+    loginExpired() {
+
+    }
+}
+describe('ajaxtimeout-service', () => {
+    let fixture: ComponentFixture<AppComponent>;
+    let comp: AppComponent;
+
+    beforeEach(() => {
+        //   // refine the test module by declaring the test component
+        TestBed.configureTestingModule({
+            imports: [
+                InterceptorModule
+            ],
+            declarations: [AppComponent],
+            providers: [
+                MockBackend,
+                {
+                    provide: ConnectionBackend,
+                    useExisting: MockBackend
+                }, {
+                    provide: XHRBackend,
+                    useExisting: MockBackend
+                }, {
+                    provide: RequestOptions,
+                    useValue: requestOptions
+                }, {
+                    provide: LoginService,
+                    useClass: LoginServiceMock
+                }, {
+                    provide: Interceptor,
+                    useClass: AjaxTimeoutInterceptor,
+                    multi: true
+                }
+            ]
+        });
+
+        //   // create component and test fixture
+        fixture = TestBed.createComponent(AppComponent);
+
+        //   // get test component from the fixture
+        comp = fixture.componentInstance;
+
+    });
+
+
+    it('should call the login method on 901', fakeAsync(
+        inject([ConnectionBackend, LoginService, Http], (backend,  login, http) => {
+            let body = "You must login again";
+            backend.connections.subscribe((connection: MockConnection) => {
+                let options = new ResponseOptions({
+                    status: 901,
+                    body: body,
+                    headers: new Headers({
+                        'Content-Type': "text/html"
+                    })
+                });
+                connection.mockRespond(new Response(options));
+            });
+
+            spyOn(login, 'loginExpired');
+            http.get("fake").subscribe();
+            tick(10);
+            expect(login.loginExpired).toHaveBeenCalled();
+        })
+    ));
+
+        it('should NOT call the login method on other status', fakeAsync(
+        inject([ConnectionBackend, LoginService, Http], (backend,  login, http) => {
+            let body = "You must login again";
+            backend.connections.subscribe((connection: MockConnection) => {
+                let options = new ResponseOptions({
+                    status: 200,
+                    body: body,
+                    headers: new Headers({
+                        'Content-Type': "text/html"
+                    })
+                });
+                connection.mockRespond(new Response(options));
+            });
+
+            spyOn(login, 'loginExpired');
+            http.get("fake").subscribe();
+            tick(10);
+            expect(login.loginExpired).not.toHaveBeenCalled();
+        })
+    ));
+
+    it('should implement toString', () => {
+        let dialogInterceptor = new AjaxTimeoutInterceptor(null);
+        expect(dialogInterceptor.toString()).toEqual("AjaxTimeoutInterceptor");
+    });
+
+});
+
+@Component({
+    selector: 'test-app-component',
+    template: '<h1>Hello</h1>'
+})
+class AppComponent {
+    constructor(public interceptors: InterceptorHandler) {
+
+    }
+}
+
