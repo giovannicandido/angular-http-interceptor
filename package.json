@@ -12,8 +12,8 @@
     "pree2e": "npm run webdriver:update",
     "e2e": "tsc && concurrently \"http-server -s\" \"protractor protractor.config.js\" --kill-others --success first",
     "webdriver:update": "webdriver-manager update",
-    "copypackage": "cp -rf package.json dist",
-    "dist": "npm run build && npm run copypackage && cd dist && npm publish"
+    "copyfiles": "cp -rf package.json dist && cp -rf README.md dist && cp -rf LICENSE dist",
+    "dist": "npm run build && npm run copyfiles && cd dist && npm publish"
   },
   "repository": {
     "type": "git",
