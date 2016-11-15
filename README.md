@@ -201,3 +201,49 @@ Just provide a custom implementantion for DialogService
          export class AppModule { }
 
 I recomend that you see the [source code](./src/interceptor/dialog.ts) for DialogInterceptor to know where it is trigged
+
+# AjaxTimeout Interceptor
+
+This interceptor cal a login service if the response is 901. This is a custom response status for timeout expiration.
+
+## Usage
+
+    import { AjaxTimeoutInterceptor, LoginService } from "angular-http-interceptor/interceptor/ajaxtimeout";
+
+    class MyLoginService implements LoginService {
+        login() {
+            window.location = "/sso/login";
+        }
+        // This method will be called on AjaxTimeout
+        loginExpired() {
+            UIkit.confirm("Your session has expired, do you want login?", () => {
+                this.login();
+            })
+            
+        }
+    }
+
+    @NgModule({
+         declarations: [
+             AppComponent
+         ],
+         imports: [
+             BrowserModule,
+             FormsModule,
+             HttpModule,
+             InterceptorModule
+         ],
+         providers: [
+             {
+                 provide: Interceptor,
+                 useClass: AjaxTimeoutInterceptor,
+                 multi: true
+             }, {
+                 provide: LoginService,
+                 useClass: MyLoginService
+             }
+         ],
+         bootstrap: [AppComponent]
+         })
+         export class AppModule { }
+
