@@ -3,18 +3,17 @@
   "version": "0.1.2",
   "description": "A interceptor module to http calls",
   "main": "index.js",
-  "files": [
-    "dist/"
-  ],
   "scripts": {
     "lint": "tslint ./src/**/*.ts -t verbose",
     "test": "tsc && concurrently \"tsc -w\" \"karma start karma.conf.js\"",
     "test-once": "tsc && karma start karma.conf.js --single-run",
     "compile": "tsc",
-    "prepublish": "npm run compile",
+    "build": "npm run compile",
     "pree2e": "npm run webdriver:update",
     "e2e": "tsc && concurrently \"http-server -s\" \"protractor protractor.config.js\" --kill-others --success first",
-    "webdriver:update": "webdriver-manager update"
+    "webdriver:update": "webdriver-manager update",
+    "copypackage": "cp -rf package.json dist",
+    "dist": "npm run build && npm run copypackage && cd dist && npm publish"
   },
   "repository": {
     "type": "git",
