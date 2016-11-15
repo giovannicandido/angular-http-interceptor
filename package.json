@@ -39,9 +39,8 @@
     "zone.js": "^0.6.26"
   },
   "devDependencies": {
-    "@angular/compiler": "~2.1.2",
-    "@angular/platform-browser-dynamic": "~2.1.2",
-    "@angular/upgrade": "~2.1.2",
+    "@angular/compiler": ">=2.0.0 <=3.0.0",
+    "@angular/platform-browser-dynamic": ">=2.0.0 <=3.0.0",
     "@types/jasmine": "^2.5.36",
     "@types/node": "^6.0.46",
     "@types/selenium-webdriver": "^2.53.33",
