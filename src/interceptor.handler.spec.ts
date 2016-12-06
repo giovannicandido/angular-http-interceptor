@@ -1,20 +1,22 @@
 import { Component } from "@angular/core";
 import {
   XHRBackend, ConnectionBackend, RequestOptions,
-  ResponseOptions, Response, Http
+  ResponseOptions, Response, Http, Request
 } from "@angular/http";
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from '@angular/core/testing';
 import { MockBackend, MockConnection } from "@angular/http/testing";
 
 import { InterceptorHandler, Interceptor, InterceptorModule } from "./index";
+import {Observable} from 'rxjs/Observable';
 
 
 class CustomInterceptor implements Interceptor {
   requestCreatedCalled = false;
   requestEndedCalled = false;
   requestErrorCalled = false;
-  requestCreated(request: any) {
+  requestCreated(request: any): Observable<Request> {
     this.requestCreatedCalled = true;
+    return Observable.of(request)
   }
   requestEnded(response: any) {
     this.requestEndedCalled = true;

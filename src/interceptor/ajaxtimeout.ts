@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Interceptor } from "../interceptor.handler";
+import { Observable } from "rxjs/Observable";
+import {Request} from "@angular/http";
 
 @Injectable()
 export abstract class LoginService {
@@ -13,8 +15,8 @@ export class AjaxTimeoutInterceptor implements Interceptor {
     constructor(private loginService: LoginService) {
     }
 
-    requestCreated(request: any) {
-
+    requestCreated(request: any): Observable<Request> {
+        return Observable.of(request)
     }
 
     requestEnded(response: any) {

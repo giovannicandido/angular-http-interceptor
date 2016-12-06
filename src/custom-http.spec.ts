@@ -75,6 +75,27 @@ describe('custom-http', () => {
         expect(called).toBeTruthy();
     })
   ));
+  
+  xit('should wait requestCreated to emit a request just before emit requestEndeded', fakeAsync(
+    inject( [ConnectionBackend],  (backend) => {
+       let body = JSON.stringify({ success: true });
+        backend.connections.subscribe((connection: MockConnection) => {
+          let options = new ResponseOptions({
+            body: body
+          });
+          connection.mockRespond(new Response(options));
+        });
+        let called = false;
+        comp.customHttp.requestEnded$.subscribe(e => {
+          expect(e).not.toBeNull();
+          expect(e.text()).toEqual(body);
+          called = true;
+        });
+        comp.customHttp.get("fake").subscribe();
+        tick(10);
+        expect(called).toBeTruthy();
+    })
+  ))
 
   it('should emit requestError event', fakeAsync(
   inject([ConnectionBackend], (backend: MockBackend) => {

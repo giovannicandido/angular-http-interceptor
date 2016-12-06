@@ -1,13 +1,14 @@
 import { Injectable, Inject } from "@angular/core";
-import { Http } from "@angular/http";
+import { Http, Request, Response } from "@angular/http";
+import { Observable } from "rxjs/Observable";
 import { CustomHttp } from "./custom-http";
 
 
 @Injectable()
 export abstract class Interceptor {
-  abstract requestCreated(request: any);
-  abstract requestEnded(response: any);
-  abstract requestError(err: any);
+  abstract requestCreated(request: Request): Observable<Request>;
+  abstract requestEnded(response: Response): void;
+  abstract requestError(err: any): void;
 }
 
 @Injectable()
