@@ -14,14 +14,14 @@ class CustomInterceptor implements Interceptor {
   requestCreatedCalled = false;
   requestEndedCalled = false;
   requestErrorCalled = false;
-  requestCreated(request: any): Observable<Request> {
+  before(request: any): Observable<Request> {
     this.requestCreatedCalled = true;
     return Observable.of(request)
   }
-  requestEnded(response: any) {
+  after(response: any) {
     this.requestEndedCalled = true;
   }
-  requestError(err: any) {
+  error(err: any) {
     this.requestErrorCalled = true;
   }
 }
@@ -80,12 +80,12 @@ describe('interceptor.handler', () => {
         });
         connection.mockRespond(new Response(options));
       });
-      spyOn(customInterceptor,'requestCreated');
-      spyOn(customInterceptor,'requestEnded');
+      spyOn(customInterceptor,'before');
+      spyOn(customInterceptor,'after');
       http.get("fake").subscribe();
       tick(10);
-      expect(customInterceptor.requestCreated).toHaveBeenCalled();
-      expect(customInterceptor.requestEnded).toHaveBeenCalled();
+      expect(customInterceptor.before).toHaveBeenCalled();
+      expect(customInterceptor.after).toHaveBeenCalled();
     })
   ));
 

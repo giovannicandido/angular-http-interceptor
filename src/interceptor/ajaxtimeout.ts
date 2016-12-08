@@ -15,17 +15,17 @@ export class AjaxTimeoutInterceptor implements Interceptor {
     constructor(private loginService: LoginService) {
     }
 
-    requestCreated(request: any): Observable<Request> {
+    before(request: any): Observable<Request> {
         return Observable.of(request)
     }
 
-    requestEnded(response: any) {
+    after(response: any) {
         if (response.status === this.STATUS_CODE) {
             this.loginService.loginExpired();
         }
     }
 
-    requestError(err: any) {
+    error(err: any) {
     }
 
     toString() {

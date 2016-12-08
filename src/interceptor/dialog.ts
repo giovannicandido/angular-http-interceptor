@@ -30,10 +30,10 @@ export class DialogService {
 export class DialogInterceptor implements Interceptor {
     constructor(private dialog: DialogService) {
     }
-    requestCreated(request: any): Observable<Request> {
+    before(request: any): Observable<Request> {
         return Observable.of(request)
     }
-    requestEnded(response: any) {
+    after(response: any) {
         if (response.status >= 200 && response.status < 300
             && (response.text() != null && (this.isHeaderStartsWithValue(response, 'Content-Type', 'text/plain')
                 || this.isHeaderStartsWithValue(response, 'Content-Type', 'text/html')))) {
@@ -48,7 +48,7 @@ export class DialogInterceptor implements Interceptor {
         }
 
     }
-    requestError(err: any) {
+    error(err: any) {
         this.dialog.showError(err, 'error');
     }
 

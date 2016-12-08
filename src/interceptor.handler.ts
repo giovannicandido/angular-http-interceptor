@@ -6,9 +6,9 @@ import { CustomHttp } from "./custom-http";
 
 @Injectable()
 export abstract class Interceptor {
-  abstract requestCreated(request: Request): Observable<Request>;
-  abstract requestEnded(response: Response): void;
-  abstract requestError(err: any): void;
+  abstract before(request: Request): Observable<Request>;
+  abstract after(response: Response): void;
+  abstract error(err: any): void;
 }
 
 @Injectable()
@@ -23,7 +23,7 @@ export class InterceptorHandler {
     interceptors.forEach(e => {
       let sub = customHttp.requestCreated$.subscribe((request) => {
         try {
-          e.requestCreated(request);
+          e.before(request);
         } catch (ex) {
           this.errorHandler(ex, e.toString());
         }
@@ -32,7 +32,7 @@ export class InterceptorHandler {
       this.subscriptions.push(sub);
       sub = customHttp.requestEnded$.subscribe((response) => {
         try {
-          e.requestEnded(response);
+          e.after(response);
         } catch (ex) {
           this.errorHandler(ex, e.toString());
         }
@@ -40,7 +40,7 @@ export class InterceptorHandler {
       this.subscriptions.push(sub);
       sub = customHttp.requestError$.subscribe((err) => {
         try {
-          e.requestError(err);
+          e.error(err);
 
         } catch (ex) {
           this.errorHandler(ex, e.toString());
