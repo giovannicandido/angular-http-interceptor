@@ -46,8 +46,8 @@ describe('custom-http', () => {
     expect(comp.customHttp).not.toBeNull();
   });
 
-  it('should emit requestCreated event', (done) => {
-    comp.customHttp.requestCreated$.subscribe(e => {
+  it('should emit before event', (done) => {
+    comp.customHttp.before$.subscribe(e => {
       expect(e).not.toBeNull();
       done();
     });
@@ -55,7 +55,7 @@ describe('custom-http', () => {
     comp.customHttp.get("fake");
   });
 
-  it('should emit requestEnded event', fakeAsync(
+  it('should emit after event', fakeAsync(
      inject( [ConnectionBackend],  (backend) => {
        let body = JSON.stringify({ success: true });
         backend.connections.subscribe((connection: MockConnection) => {
@@ -65,7 +65,7 @@ describe('custom-http', () => {
           connection.mockRespond(new Response(options));
         });
         let called = false;
-        comp.customHttp.requestEnded$.subscribe(e => {
+        comp.customHttp.after$.subscribe(e => {
           expect(e).not.toBeNull();
           expect(e.text()).toEqual(body);
           called = true;
@@ -76,7 +76,7 @@ describe('custom-http', () => {
     })
   ));
   
-  xit('should wait requestCreated to emit a request just before emit requestEndeded', fakeAsync(
+  xit('should wait before to emit a request just before emit aftered', fakeAsync(
     inject( [ConnectionBackend],  (backend) => {
        let body = JSON.stringify({ success: true });
         backend.connections.subscribe((connection: MockConnection) => {
@@ -86,7 +86,7 @@ describe('custom-http', () => {
           connection.mockRespond(new Response(options));
         });
         let called = false;
-        comp.customHttp.requestEnded$.subscribe(e => {
+        comp.customHttp.after$.subscribe(e => {
           expect(e).not.toBeNull();
           expect(e.text()).toEqual(body);
           called = true;
@@ -97,13 +97,13 @@ describe('custom-http', () => {
     })
   ))
 
-  it('should emit requestError event', fakeAsync(
+  it('should emit error event', fakeAsync(
   inject([ConnectionBackend], (backend: MockBackend) => {
     backend.connections.subscribe((connection: MockConnection) => {
       connection.mockError(new Error("Response error"));
     });
     let called = false;
-    comp.customHttp.requestError$.subscribe(e => {
+    comp.customHttp.error.subscribe(e => {
       expect(e).not.toBeNull();
       called = true;
     });
@@ -112,13 +112,13 @@ describe('custom-http', () => {
     expect(called).toBeTruthy();
   })));
 
-  it('should emit requestError event without a catch', fakeAsync(
+  it('should emit error event without a catch', fakeAsync(
   inject([ConnectionBackend], (backend: MockBackend) => {
     backend.connections.subscribe((connection: MockConnection) => {
       connection.mockError(new Error("Response error"));
     });
     let called = false;
-    comp.customHttp.requestError$.subscribe(e => {
+    comp.customHttp.error.subscribe(e => {
       expect(e).not.toBeNull();
       called = true;
     });

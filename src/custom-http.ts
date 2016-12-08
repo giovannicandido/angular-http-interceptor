@@ -9,27 +9,27 @@ import "rxjs/add/operator/catch";
 
 @Injectable()
 export class CustomHttp extends Http {
-  public requestCreated$: Subject<any>;
-  public requestEnded$: Subject<any>;
-  public requestError$: Subject<any>;
+  public before$: Subject<any>;
+  public after$: Subject<any>;
+  public error: Subject<any>;
 
   constructor(backend: ConnectionBackend, defaultOptions: RequestOptions) {
     super(backend, defaultOptions);
-    this.requestCreated$ = new Subject();
-    this.requestEnded$ = new Subject();
-    this.requestError$ = new Subject();
+    this.before$ = new Subject();
+    this.after$ = new Subject();
+    this.error = new Subject();
   }
 
   request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
-    this.requestCreated$.next(url);
+    this.before$.next(url);
     return this.intercept(super.request(url, options));
   }
 
   intercept(observable: Observable<Response>): Observable<Response> {
     return observable.do(res => {
-      this.requestEnded$.next(res);
+      this.after$.next(res);
     }).catch((err: Response, source) => {
-      this.requestError$.next(err);
+      this.error.next(err);
       return Observable.of(err);
     });
   }

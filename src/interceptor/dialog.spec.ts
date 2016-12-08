@@ -136,7 +136,7 @@ describe('dialog-service', () => {
         })
     ));
 
-    it('should call requestError on 500', fakeAsync(
+    it('should call error on 500', fakeAsync(
         inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
             let body = "Server error";
             backend.connections.subscribe((connection: MockConnection) => {
@@ -159,7 +159,7 @@ describe('dialog-service', () => {
         })
     ));
 
-    it('should call requestError on 404', fakeAsync(
+    it('should call error on 404', fakeAsync(
         inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
             let body = "Not Found";
             backend.connections.subscribe((connection: MockConnection) => {
@@ -182,7 +182,7 @@ describe('dialog-service', () => {
         })
     ));
 
-    it('should call requestError on exception', fakeAsync(
+    it('should call error on exception', fakeAsync(
         inject([MockBackend, DialogService, Http], (backend: MockBackend, dialog: DialogService, http: Http) => {
             let exception = new Error('Exception throw');
 

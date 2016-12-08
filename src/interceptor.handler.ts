@@ -21,7 +21,7 @@ export class InterceptorHandler {
     let customHttp = <CustomHttp>http;
 
     interceptors.forEach(e => {
-      let sub = customHttp.requestCreated$.subscribe((request) => {
+      let sub = customHttp.before$.subscribe((request) => {
         try {
           e.before(request);
         } catch (ex) {
@@ -30,7 +30,7 @@ export class InterceptorHandler {
 
       });
       this.subscriptions.push(sub);
-      sub = customHttp.requestEnded$.subscribe((response) => {
+      sub = customHttp.after$.subscribe((response) => {
         try {
           e.after(response);
         } catch (ex) {
@@ -38,7 +38,7 @@ export class InterceptorHandler {
         }
       });
       this.subscriptions.push(sub);
-      sub = customHttp.requestError$.subscribe((err) => {
+      sub = customHttp.error.subscribe((err) => {
         try {
           e.error(err);
 

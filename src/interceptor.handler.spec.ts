@@ -11,18 +11,18 @@ import {Observable} from 'rxjs/Observable';
 
 
 class CustomInterceptor implements Interceptor {
-  requestCreatedCalled = false;
-  requestEndedCalled = false;
-  requestErrorCalled = false;
+  beforeCalled = false;
+  afterCalled = false;
+  errorCalled = false;
   before(request: any): Observable<Request> {
-    this.requestCreatedCalled = true;
+    this.beforeCalled = true;
     return Observable.of(request)
   }
   after(response: any) {
-    this.requestEndedCalled = true;
+    this.afterCalled = true;
   }
   error(err: any) {
-    this.requestErrorCalled = true;
+    this.errorCalled = true;
   }
 }
 
@@ -101,10 +101,10 @@ describe('interceptor.handler', () => {
 
       http.get("fake").subscribe();
       tick(10);
-      expect(customInterceptor.requestCreatedCalled).toBeTruthy();
-      expect(customInterceptor.requestEndedCalled).toBeTruthy();
-      expect(customInterceptor2.requestCreatedCalled).toBeTruthy();
-      expect(customInterceptor2.requestEndedCalled).toBeTruthy();
+      expect(customInterceptor.beforeCalled).toBeTruthy();
+      expect(customInterceptor.afterCalled).toBeTruthy();
+      expect(customInterceptor2.beforeCalled).toBeTruthy();
+      expect(customInterceptor2.afterCalled).toBeTruthy();
     })
   ));
 });
