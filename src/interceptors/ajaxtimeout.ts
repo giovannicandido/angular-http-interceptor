@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Interceptor } from "../interceptor.handler";
+import { Interceptor } from "../index";
 import { Observable } from "rxjs/Observable";
 import {Request} from "@angular/http";
 
@@ -15,7 +15,7 @@ export class AjaxTimeoutInterceptor implements Interceptor {
     constructor(private loginService: LoginService) {
     }
 
-    before(request: any): Observable<Request> {
+    before(request: any): Observable<void> {
         return Observable.of(request)
     }
 

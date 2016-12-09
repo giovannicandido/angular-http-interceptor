@@ -1,35 +1,66 @@
-import { Component } from "@angular/core";
-import { HttpModule, ConnectionBackend, ResponseOptions, Response } from "@angular/http";
+
+import {Component} from '@angular/core';
+import {RequestOptions, HttpModule, ConnectionBackend, XHRBackend, Http, ResponseOptions, Response} from '@angular/http';
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
-import { By } from "@angular/platform-browser";
+import {By} from '@angular/platform-browser';
 import { MockBackend, MockConnection } from "@angular/http/testing";
 
-import { CustomHttp } from "./custom-http";
-import {Observable} from "rxjs/Observable";
+import { CustomHttp, Interceptor, InterceptorModule } from "./index";
+import { Observable } from "rxjs/Observable";
 
 import "rxjs/add/operator/catch";
-import "rxjs/add/observable/of";
+import "rxjs/add/operator/delay";
+import "rxjs/add/observable/fromPromise";
+
+class CustomInterceptor implements Interceptor {
+  constructor(private delay: number) { }
+  // TODO use Observable.of(request).delay(this.delay) bug: https://github.com/angular/angular/issues/10127
+  before(request: any): Observable<any> {
+    return Observable.fromPromise(new Promise((resolve, reject) => {
+      setTimeout(() => resolve(), this.delay)
+    }))
+  }
+  after(response: any) {
+  }
+  error(err: any) {
+  }
+}
+
+let fixture: ComponentFixture<AppComponent>;
+let comp: AppComponent;
+let requestOptions = new RequestOptions();
 
 describe('custom-http', () => {
-  let fixture: ComponentFixture<AppComponent>;
-  let comp: AppComponent;
 
   beforeEach(() => {
     //   // refine the test module by declaring the test component
     TestBed.configureTestingModule({
       imports: [
-        HttpModule
+        HttpModule,
+        InterceptorModule.withInterceptors([
+          { provide: Interceptor, useExisting: CustomInterceptor }
+        ])
       ],
       declarations: [AppComponent],
       providers: [
-        CustomHttp,
+        MockBackend,
+        {
+          provide: RequestOptions,
+          useValue: requestOptions
+        },
         {
           provide: ConnectionBackend,
-          useClass: MockBackend
+          useExisting: MockBackend
+        }, {
+          provide: XHRBackend,
+          useExisting: MockBackend
+        }, {
+          provide: CustomInterceptor,
+          useValue: new CustomInterceptor(0)
         }
-
       ]
     });
+
 
     //   // create component and test fixture
     fixture = TestBed.createComponent(AppComponent);
@@ -38,6 +69,7 @@ describe('custom-http', () => {
     comp = fixture.componentInstance;
 
   });
+
   it('should inject CustomHttp in hello world component', () => {
     fixture.detectChanges();
     let debugElement = fixture.debugElement.query(By.css("h1"));
@@ -46,86 +78,123 @@ describe('custom-http', () => {
     expect(comp.customHttp).not.toBeNull();
   });
 
-  it('should emit before event', (done) => {
-    comp.customHttp.before$.subscribe(e => {
-      expect(e).not.toBeNull();
-      done();
-    });
-
-    comp.customHttp.get("fake");
-  });
+  it('should emit before event', fakeAsync(
+    inject([CustomInterceptor, Http], (interceptor, http) => {
+      spyOn(interceptor, 'before')
+      http.get("fake")
+      tick(10)
+      expect(interceptor.before).toHaveBeenCalled();
+    }
+    )));
 
   it('should emit after event', fakeAsync(
-     inject( [ConnectionBackend],  (backend) => {
-       let body = JSON.stringify({ success: true });
-        backend.connections.subscribe((connection: MockConnection) => {
-          let options = new ResponseOptions({
-            body: body
-          });
-          connection.mockRespond(new Response(options));
+    inject([ConnectionBackend, CustomInterceptor, Http], (backend, interceptor, http) => {
+      let body = JSON.stringify({ success: true });
+      backend.connections.subscribe((connection: MockConnection) => {
+        let options = new ResponseOptions({
+          body: body
         });
-        let called = false;
-        comp.customHttp.after$.subscribe(e => {
-          expect(e).not.toBeNull();
-          expect(e.text()).toEqual(body);
-          called = true;
-        });
-        comp.customHttp.get("fake").subscribe();
-        tick(10);
-        expect(called).toBeTruthy();
+        connection.mockRespond(new Response(options));
+      });
+
+      spyOn(interceptor, 'after')
+      // Without subscribe after is not called
+      http.get("fake");
+      tick(10);
+      expect(interceptor.after).not.toHaveBeenCalled();      
+      
+      http.get("fake").subscribe()
+      tick(1)
+      expect(interceptor.after).toHaveBeenCalled();
     })
   ));
-  
-  xit('should wait before to emit a request just before emit aftered', fakeAsync(
-    inject( [ConnectionBackend],  (backend) => {
-       let body = JSON.stringify({ success: true });
-        backend.connections.subscribe((connection: MockConnection) => {
-          let options = new ResponseOptions({
-            body: body
-          });
-          connection.mockRespond(new Response(options));
-        });
-        let called = false;
-        comp.customHttp.after$.subscribe(e => {
-          expect(e).not.toBeNull();
-          expect(e.text()).toEqual(body);
-          called = true;
-        });
-        comp.customHttp.get("fake").subscribe();
-        tick(10);
-        expect(called).toBeTruthy();
-    })
-  ))
 
   it('should emit error event', fakeAsync(
-  inject([ConnectionBackend], (backend: MockBackend) => {
-    backend.connections.subscribe((connection: MockConnection) => {
-      connection.mockError(new Error("Response error"));
-    });
-    let called = false;
-    comp.customHttp.error.subscribe(e => {
-      expect(e).not.toBeNull();
-      called = true;
-    });
-    comp.customHttp.get("fake").catch((e, c) => Observable.of(e)).subscribe();
-    tick(10);
-    expect(called).toBeTruthy();
-  })));
+    inject([ConnectionBackend, CustomInterceptor, Http], (backend: MockBackend, interceptor, http) => {
+      backend.connections.subscribe((connection: MockConnection) => {
+        connection.mockError(new Error("Response error"));
+      });
+      spyOn(interceptor, 'error')
+      http.get("fake").catch((e, c) => Observable.of(e)).subscribe();
+      tick(10);
+      expect(interceptor.error).toHaveBeenCalled();
+    })));
 
   it('should emit error event without a catch', fakeAsync(
-  inject([ConnectionBackend], (backend: MockBackend) => {
-    backend.connections.subscribe((connection: MockConnection) => {
-      connection.mockError(new Error("Response error"));
+    inject([ConnectionBackend, CustomInterceptor, Http], (backend: MockBackend, interceptor, http) => {
+      backend.connections.subscribe((connection: MockConnection) => {
+        connection.mockError(new Error("Response error"));
+      });
+      spyOn(interceptor, 'error')
+      http.get("fake").subscribe();
+      tick(10);
+      expect(interceptor.error).toHaveBeenCalled();
+    })));
+
+    
+});
+
+describe('custom-http-delay', () => {
+
+  beforeEach(() => {
+    //   // refine the test module by declaring the test component
+    TestBed.configureTestingModule({
+      imports: [
+        HttpModule,
+        InterceptorModule.withInterceptors([
+          { provide: Interceptor, useExisting: CustomInterceptor }
+        ])
+      ],
+      declarations: [AppComponent],
+      providers: [
+        MockBackend,
+        {
+          provide: RequestOptions,
+          useValue: requestOptions
+        },
+        {
+          provide: ConnectionBackend,
+          useExisting: MockBackend
+        }, {
+          provide: XHRBackend,
+          useExisting: MockBackend
+        }, {
+          provide: CustomInterceptor,
+          useValue: new CustomInterceptor(15)
+        }
+      ]
     });
-    let called = false;
-    comp.customHttp.error.subscribe(e => {
-      expect(e).not.toBeNull();
-      called = true;
-    });
-    comp.customHttp.get("fake").subscribe();
-    tick(10);
-    expect(called).toBeTruthy();
-  })));
+
+
+    //   // create component and test fixture
+    fixture = TestBed.createComponent(AppComponent);
+
+    //   // get test component from the fixture
+    comp = fixture.componentInstance;
+
+  });
+
+  it('should wait before interceptor method to emit a request', fakeAsync(
+    inject([ConnectionBackend, CustomInterceptor, Http], (backend, interceptor, http) => {
+      let body = JSON.stringify({ success: true });
+      backend.connections.subscribe((connection: MockConnection) => {
+        let options = new ResponseOptions({
+          body: body
+        });
+        connection.mockRespond(new Response(options));
+      });
+      spyOn(interceptor, 'error')
+      spyOn(interceptor, 'after')
+      http.get("fake").subscribe();
+      // 10 miliseconds pass
+      tick(10);
+      expect(interceptor.after).not.toHaveBeenCalled();
+
+      // 100 miliseconds pass
+      tick(100)
+      expect(interceptor.after).toHaveBeenCalled();
+
+    })));
 });
 
 @Component({
@@ -134,6 +203,5 @@ describe('custom-http', () => {
 })
 class AppComponent {
   constructor(public customHttp: CustomHttp) {
-
   }
 }

@@ -1,11 +1,10 @@
-import { Component } from "@angular/core";
-import { ConnectionBackend, RequestOptions, Headers, ResponseOptions, Response, Http, XHRBackend } from "@angular/http";
+import {Component} from '@angular/core';
+import {RequestOptions, HttpModule, ConnectionBackend, XHRBackend, Http, ResponseOptions, Headers, Response} from '@angular/http';
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
 import { MockBackend, MockConnection } from "@angular/http/testing";
 
-import { DialogService, DialogInterceptor } from "./dialog";
-import { InterceptorModule } from "../interceptor.module";
-import { Interceptor, InterceptorHandler } from "../interceptor.handler";
+import {DialogInterceptor, DialogService} from './dialog';
+import { Interceptor, InterceptorModule } from "../index";
 
 import { Observable } from "rxjs/Observable";
 
@@ -21,7 +20,8 @@ describe('dialog-service', () => {
         //   // refine the test module by declaring the test component
         TestBed.configureTestingModule({
             imports: [
-                InterceptorModule
+                HttpModule,
+                InterceptorModule.withInterceptors([DialogInterceptor])
             ],
             declarations: [AppComponent],
             providers: [
@@ -29,10 +29,6 @@ describe('dialog-service', () => {
                 DialogService, {
                     provide: RequestOptions,
                     useValue: requestOptions
-                }, {
-                    provide: Interceptor,
-                    useClass: DialogInterceptor,
-                    multi: true
                 }, {
                     provide: ConnectionBackend,
                     useExisting: MockBackend
@@ -259,7 +255,5 @@ describe('dialog-service', () => {
     template: '<h1>Hello</h1>'
 })
 class AppComponent {
-    constructor(public interceptors: InterceptorHandler) {
-
-    }
+    
 }

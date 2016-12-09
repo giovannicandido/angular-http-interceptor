@@ -1,12 +1,10 @@
-import { Component } from "@angular/core";
-import { ConnectionBackend, RequestOptions, Headers, ResponseOptions, Response, Http, XHRBackend } from "@angular/http";
+import {Component} from '@angular/core';
+import {RequestOptions, HttpModule, ConnectionBackend, XHRBackend, Http, ResponseOptions, Headers, Response} from '@angular/http';
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
 import { MockBackend, MockConnection } from "@angular/http/testing";
 
-import { AjaxTimeoutInterceptor, LoginService } from "./ajaxtimeout";
-import { InterceptorModule } from "../interceptor.module";
-import { Interceptor, InterceptorHandler } from "../interceptor.handler";
-
+import {LoginService, AjaxTimeoutInterceptor} from './ajaxtimeout';
+import {InterceptorModule} from '../interceptor.module';
 
 let requestOptions = new RequestOptions();
 
@@ -25,7 +23,8 @@ describe('ajaxtimeout-service', () => {
         //   // refine the test module by declaring the test component
         TestBed.configureTestingModule({
             imports: [
-                InterceptorModule
+                HttpModule,
+                InterceptorModule.withInterceptors([AjaxTimeoutInterceptor])
             ],
             declarations: [AppComponent],
             providers: [
@@ -42,10 +41,6 @@ describe('ajaxtimeout-service', () => {
                 }, {
                     provide: LoginService,
                     useClass: LoginServiceMock
-                }, {
-                    provide: Interceptor,
-                    useClass: AjaxTimeoutInterceptor,
-                    multi: true
                 }
             ]
         });
@@ -113,8 +108,6 @@ describe('ajaxtimeout-service', () => {
     template: '<h1>Hello</h1>'
 })
 class AppComponent {
-    constructor(public interceptors: InterceptorHandler) {
-
-    }
+    
 }
 

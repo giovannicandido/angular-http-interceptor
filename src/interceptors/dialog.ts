@@ -1,9 +1,8 @@
-import { Injectable } from "@angular/core";
-import { Response, Request } from "@angular/http";
+import {Injectable} from '@angular/core';
+import {Response} from '@angular/http';
 
-import { Interceptor } from "../interceptor.handler";
 import { Observable } from "rxjs/Observable";
-
+import {Interceptor} from "../index"
 declare var UIkit: any;
 
 /**
@@ -30,7 +29,7 @@ export class DialogService {
 export class DialogInterceptor implements Interceptor {
     constructor(private dialog: DialogService) {
     }
-    before(request: any): Observable<Request> {
+    before(request: any): Observable<void> {
         return Observable.of(request)
     }
     after(response: any) {
