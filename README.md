@@ -10,6 +10,8 @@ and create standard interceptors for other projects.
 I plan to add a LoadingBarInterceptor, a DialogInterceptor, and a SessionExpirationInterceptor.
 All of then optional, you can write your own.
 
+Note: The Http request will only execute after all observables in the before interceptors execute
+
 # How to use
 
     import { NgModule } from "@angular/core"
@@ -17,15 +19,16 @@ All of then optional, you can write your own.
     import { InterceptorModule, Interceptor } from "angular-http-interceptor" 
     
     class MyInterceptor implements Interceptor {
-        requestCreated(request: any) {
+        before(request: any): Observable<any> {
             console.info("ExampleInterceptor - RequestCreated: " + request)
+            return Observable.empty()
         }
 
-        requestEnded(res: any) {
+        after(res: any) {
             console.info("ExampleInterceptor - RequestEnded: " + res)
         }
 
-        requestError(err: any) {
+        error(err: any) {
             console.error("ExampleInterceptor - RequestError: " + err)
         }
     }
@@ -38,15 +41,10 @@ All of then optional, you can write your own.
     @NgModule({
         imports: [ 
             HttpModule,
-            InterceptorModule,
+            InterceptorModule.withInterceptors([
+                MyInterceptor
+            ]),
          ]
-        providers: [
-            {
-                provide: Interceptor,
-                useClass: MyInterceptor,
-                multi: true
-            }
-        ]
     })
     export class AppModule {
 
@@ -54,7 +52,6 @@ All of then optional, you can write your own.
 
     import { Component, OnInit, OnDestroy} from '@angular/core';
     import { Http } from "@angular/http"
-    import { InterceptorHandler } from "angular-http-interceptor"
 
 
     @Component({
@@ -65,7 +62,7 @@ All of then optional, you can write your own.
     export class AppComponent implements OnInit, OnDestroy {
         title = 'app works!';
 
-        constructor(private http: Http, private interceptorHandler: InterceptorHandler) {
+        constructor(private http: Http) {
 
         }
         ngOnInit() {
@@ -73,10 +70,6 @@ All of then optional, you can write your own.
             this.http.get("interceptor").subscribe(r => {
             console.log("Result")
             });
-        }
-        // Clean Interceptors Subscriptions
-        ngOnDestroy(){
-            this.interceptorHandler.dispose();
         }
     }
 
@@ -121,20 +114,7 @@ Import DialogInterceptor and DialogService and create a provider for it
             BrowserModule,
             FormsModule,
             HttpModule,
-            InterceptorModule
-        ],
-        providers: [
-            {
-                provide: Interceptor,
-                useClass: MyInterceptor,
-                multi: true
-            }, 
-            DialogService, 
-            {
-                provide: Interceptor,
-                useClass: DialogInterceptor,
-                multi: true
-            }
+            InterceptorModule.withInterceptors([MyInterceptor, DialogInterceptor])
         ],
         bootstrap: [AppComponent]
         })
@@ -179,21 +159,12 @@ Just provide a custom implementantion for DialogService
              BrowserModule,
              FormsModule,
              HttpModule,
-             InterceptorModule
+             InterceptorModule.withInterceptors([MyInterceptor, DialogInterceptor])
          ],
          providers: [
              {
-                 provide: Interceptor,
-                 useClass: MyInterceptor,
-                 multi: true
-             }, 
-             {
                  provide: DialogService,
                  useClass: MyDialogService
-             }, {
-                 provide: Interceptor,
-                 useClass: DialogInterceptor,
-                 multi: true
              }
          ],
          bootstrap: [AppComponent]
