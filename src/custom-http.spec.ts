@@ -2,7 +2,6 @@
 import {Component} from '@angular/core';
 import {RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions, Response} from '@angular/http';
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
-import {By} from '@angular/platform-browser';
 import { MockBackend, MockConnection } from "@angular/http/testing";
 
 import { CustomHttp, Interceptor, InterceptorModule } from "./index";
