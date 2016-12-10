@@ -10,7 +10,10 @@ and create standard interceptors for other projects.
 I plan to add a LoadingBarInterceptor, a DialogInterceptor, and a SessionExpirationInterceptor.
 All of then optional, you can write your own.
 
-**Note**: The Http request will only execute after all observables in the before interceptors execute
+**Note**: The Http request will only execute after all observables in the before interceptors execute. 
+That is a requirement to do things like security token refresh
+
+This library is used by [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa) which provides other goodies
 
 # How to use
 
