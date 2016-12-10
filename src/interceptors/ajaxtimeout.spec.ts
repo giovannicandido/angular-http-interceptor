@@ -1,10 +1,10 @@
-import {Component} from '@angular/core';
-import {RequestOptions, HttpModule, ConnectionBackend, XHRBackend, Http, ResponseOptions, Headers, Response} from '@angular/http';
+import { Component } from '@angular/core';
+import { RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions, Headers, Response } from '@angular/http';
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
 import { MockBackend, MockConnection } from "@angular/http/testing";
 
-import {LoginService, AjaxTimeoutInterceptor} from './ajaxtimeout';
-import {InterceptorModule} from '../interceptor.module';
+import { LoginService, AjaxTimeoutInterceptor } from './ajaxtimeout';
+import { InterceptorModule } from '../interceptor.module';
 
 let requestOptions = new RequestOptions();
 
@@ -30,9 +30,6 @@ describe('ajaxtimeout-service', () => {
             providers: [
                 MockBackend,
                 {
-                    provide: ConnectionBackend,
-                    useExisting: MockBackend
-                }, {
                     provide: XHRBackend,
                     useExisting: MockBackend
                 }, {
@@ -55,7 +52,7 @@ describe('ajaxtimeout-service', () => {
 
 
     it('should call the login method on 901', fakeAsync(
-        inject([ConnectionBackend, LoginService, Http], (backend,  login, http) => {
+        inject([MockBackend, LoginService, Http], (backend, login, http) => {
             let body = "You must login again";
             backend.connections.subscribe((connection: MockConnection) => {
                 let options = new ResponseOptions({
@@ -75,8 +72,8 @@ describe('ajaxtimeout-service', () => {
         })
     ));
 
-        it('should NOT call the login method on other status', fakeAsync(
-        inject([ConnectionBackend, LoginService, Http], (backend,  login, http) => {
+    it('should NOT call the login method on other status', fakeAsync(
+        inject([MockBackend, LoginService, Http], (backend, login, http) => {
             let body = "You must login again";
             backend.connections.subscribe((connection: MockConnection) => {
                 let options = new ResponseOptions({
@@ -108,6 +105,4 @@ describe('ajaxtimeout-service', () => {
     template: '<h1>Hello</h1>'
 })
 class AppComponent {
-    
 }
-

@@ -1,5 +1,5 @@
 import {NgModule, Provider, ModuleWithProviders, OpaqueToken, Type} from '@angular/core';
-import {Http, ConnectionBackend, RequestOptions} from '@angular/http';
+import {Http, HttpModule, XHRBackend, RequestOptions} from '@angular/http';
 import {CustomHttp, Interceptor} from './custom-http';
 
 @NgModule()
@@ -23,12 +23,12 @@ export class InterceptorModule {
     return {
       ngModule: InterceptorModule,
       providers: interceptorProviders.concat([
-        { provide: Http, useFactory: httpFactory, deps: [opaqueToken, ConnectionBackend, RequestOptions] },
+        { provide: Http, useFactory: httpFactory, deps: [opaqueToken, XHRBackend, RequestOptions] },
         { provide: CustomHttp, useExisting: Http }
       ])
     };
 
-    function httpFactory(httpInterceptors: Interceptor[], connectionBackend: ConnectionBackend, requestOptions: RequestOptions): Http {
+    function httpFactory(httpInterceptors: Interceptor[], connectionBackend: XHRBackend, requestOptions: RequestOptions): Http {
       return new CustomHttp(httpInterceptors, connectionBackend, requestOptions);
     }
   }

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Response} from '@angular/http';
 
 import { Observable } from "rxjs/Observable";
-import {Interceptor} from "../index"
+import {Interceptor} from "../index";
 declare var UIkit: any;
 
 /**
@@ -29,8 +29,8 @@ export class DialogService {
 export class DialogInterceptor implements Interceptor {
     constructor(private dialog: DialogService) {
     }
-    before(request: any): Observable<void> {
-        return Observable.of(request)
+    before(request: any): Observable<any> {
+        return Observable.of(request);
     }
     after(response: any) {
         if (response.status >= 200 && response.status < 300

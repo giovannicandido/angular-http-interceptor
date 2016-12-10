@@ -1,4 +1,4 @@
-import {Request, Response, Http, ConnectionBackend, RequestOptions, RequestOptionsArgs} from '@angular/http';
+import {Request, Response, Http, XHRBackend, RequestOptions, RequestOptionsArgs} from '@angular/http';
 import {Injectable} from '@angular/core';
 
 import {Observable} from "rxjs/Observable";
@@ -11,7 +11,7 @@ import "rxjs/add/observable/concat";
 
 @Injectable()
 export abstract class Interceptor {
-  abstract before(request: string | Request): Observable<void>;
+  abstract before(request: string | Request): Observable<any>;
   abstract after(response: Response): void;
   abstract error(err: any): void;
 }
@@ -19,7 +19,7 @@ export abstract class Interceptor {
 
 @Injectable()
 export class CustomHttp extends Http {
-  constructor(private interceptors: Interceptor[], backend: ConnectionBackend, defaultOptions: RequestOptions) {
+  constructor(private interceptors: Interceptor[], backend: XHRBackend, defaultOptions: RequestOptions) {
     super(backend, defaultOptions);
   }
 

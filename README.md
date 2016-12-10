@@ -10,9 +10,24 @@ and create standard interceptors for other projects.
 I plan to add a LoadingBarInterceptor, a DialogInterceptor, and a SessionExpirationInterceptor.
 All of then optional, you can write your own.
 
-Note: The Http request will only execute after all observables in the before interceptors execute
+**Note**: The Http request will only execute after all observables in the before interceptors execute
 
 # How to use
+
+You need to import HttpModule and `InterceptorModule` and provide the interceptors. The `IntercetorModule.withInterceptors()` static function is used
+to create the module with the providers.
+
+The method `InterceptorModule.withInterceptors()` accepts all kinds of providers (ValueProviders, FactoryProviders...) and plain classes. Exemples:
+
+    InterceptorModule.withInterceptors([InterceptorClass])
+    InterceptorModule.withInterceptors([{ provide: Interceptor, useClass: InterceptorClass }])
+    InterceptorModule.withInterceptors([{ provide: Interceptor, useExisting: InterceptorClass }])
+    InterceptorModule.withInterceptors([{ provide: Interceptor, useValue: interceptorObject }])
+
+This give the flexibility you need. The `provide` part is always overrided to a `OpaqueToken`, is irrelevant what you put here, 
+but the typescript compiler will complain if you omit.
+
+More complete examples:
 
     import { NgModule } from "@angular/core"
     import { HttpModule } from "@angular/http"
@@ -104,7 +119,7 @@ The default notification use [UIkit](http://getuikit.com) to show messages. You 
 
 Import DialogInterceptor and DialogService and create a provider for it
 
-    import { DialogInterceptor, DialogService } from "angular-http-interceptor/interceptor/dialog"
+    import { DialogInterceptor, DialogService } from "angular-http-interceptor/interceptors/dialog"
 
     @NgModule({
         declarations: [
@@ -140,7 +155,7 @@ Add UIkit to your project, if you use angular-cli you need to update **angular-c
 
 Just provide a custom implementantion for DialogService
 
-    import { DialogInterceptor, DialogService } from "angular-http-interceptor/interceptor/dialog"
+    import { DialogInterceptor, DialogService } from "angular-http-interceptor/interceptors/dialog"
 
     class MyDialogService implements DialogService {
         showMessage(message: string, status: string): void {
@@ -179,7 +194,7 @@ This interceptor cal a login service if the response is 901. This is a custom re
 
 ## Usage
 
-    import { AjaxTimeoutInterceptor, LoginService } from "angular-http-interceptor/interceptor/ajaxtimeout";
+    import { AjaxTimeoutInterceptor, LoginService } from "angular-http-interceptor/interceptors/ajaxtimeout";
 
     class MyLoginService implements LoginService {
         login() {
@@ -202,17 +217,13 @@ This interceptor cal a login service if the response is 901. This is a custom re
              BrowserModule,
              FormsModule,
              HttpModule,
-             InterceptorModule
+             InterceptorModule.withInterceptors([MyLoginService])
          ],
          providers: [
-             {
-                 provide: Interceptor,
-                 useClass: AjaxTimeoutInterceptor,
-                 multi: true
-             }, {
+            {
                  provide: LoginService,
                  useClass: MyLoginService
-             }
+            }
          ],
          bootstrap: [AppComponent]
          })

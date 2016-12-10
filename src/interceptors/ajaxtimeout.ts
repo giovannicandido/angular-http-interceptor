@@ -15,8 +15,8 @@ export class AjaxTimeoutInterceptor implements Interceptor {
     constructor(private loginService: LoginService) {
     }
 
-    before(request: any): Observable<void> {
-        return Observable.of(request)
+    before(request: string | Request): Observable<any> {
+        return Observable.of(request);
     }
 
     after(response: any) {

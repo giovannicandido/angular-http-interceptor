@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
-import {RequestOptions, HttpModule, ConnectionBackend, XHRBackend, Http, ResponseOptions, Headers, Response} from '@angular/http';
+import {RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions, Headers, Response} from '@angular/http';
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
 import { MockBackend, MockConnection } from "@angular/http/testing";
 
-import {DialogInterceptor, DialogService} from './dialog';
-import { Interceptor, InterceptorModule } from "../index";
+import { DialogInterceptor, DialogService } from './dialog';
+import { InterceptorModule } from "../index";
 
 import { Observable } from "rxjs/Observable";
 
@@ -30,7 +30,7 @@ describe('dialog-service', () => {
                     provide: RequestOptions,
                     useValue: requestOptions
                 }, {
-                    provide: ConnectionBackend,
+                    provide: XHRBackend,
                     useExisting: MockBackend
                 }, {
                     provide: XHRBackend,
@@ -49,7 +49,7 @@ describe('dialog-service', () => {
 
 
     it('should call a dialog in ok response with responseText', fakeAsync(
-        inject([ConnectionBackend, DialogService, Http], (backend, dialog, http) => {
+        inject([MockBackend, DialogService, Http], (backend, dialog, http) => {
             let body = "Message";
             backend.connections.subscribe((connection: MockConnection) => {
                 let options = new ResponseOptions({
@@ -70,7 +70,7 @@ describe('dialog-service', () => {
     ));
 
     it('should call a dialog in created response with responseText', fakeAsync(
-        inject([ConnectionBackend, DialogService, Http], (backend, dialog, http) => {
+        inject([MockBackend, DialogService, Http], (backend, dialog, http) => {
             let body = "Message";
             backend.connections.subscribe((connection: MockConnection) => {
                 let options = new ResponseOptions({
@@ -255,5 +255,4 @@ describe('dialog-service', () => {
     template: '<h1>Hello</h1>'
 })
 class AppComponent {
-    
 }

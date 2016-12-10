@@ -1,6 +1,6 @@
 
 import {Component} from '@angular/core';
-import {RequestOptions, HttpModule, ConnectionBackend, XHRBackend, Http, ResponseOptions, Response} from '@angular/http';
+import {RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions, Response} from '@angular/http';
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
 import {By} from '@angular/platform-browser';
 import { MockBackend, MockConnection } from "@angular/http/testing";
@@ -43,17 +43,13 @@ describe('custom-http', () => {
       ],
       declarations: [AppComponent],
       providers: [
-        MockBackend,
         {
           provide: RequestOptions,
           useValue: requestOptions
         },
         {
-          provide: ConnectionBackend,
-          useExisting: MockBackend
-        }, {
           provide: XHRBackend,
-          useExisting: MockBackend
+          useClass: MockBackend
         }, {
           provide: CustomInterceptor,
           useValue: new CustomInterceptor(0)
@@ -70,14 +66,6 @@ describe('custom-http', () => {
 
   });
 
-  it('should inject CustomHttp in hello world component', () => {
-    fixture.detectChanges();
-    let debugElement = fixture.debugElement.query(By.css("h1"));
-    let element = debugElement.nativeElement;
-    expect(element.textContent).toContain('Hello');
-    expect(comp.customHttp).not.toBeNull();
-  });
-
   it('should emit before event', fakeAsync(
     inject([CustomInterceptor, Http], (interceptor, http) => {
       spyOn(interceptor, 'before')
@@ -88,7 +76,7 @@ describe('custom-http', () => {
     )));
 
   it('should emit after event', fakeAsync(
-    inject([ConnectionBackend, CustomInterceptor, Http], (backend, interceptor, http) => {
+    inject([XHRBackend, CustomInterceptor, Http], (backend, interceptor, http) => {
       let body = JSON.stringify({ success: true });
       backend.connections.subscribe((connection: MockConnection) => {
         let options = new ResponseOptions({
@@ -110,7 +98,7 @@ describe('custom-http', () => {
   ));
 
   it('should emit error event', fakeAsync(
-    inject([ConnectionBackend, CustomInterceptor, Http], (backend: MockBackend, interceptor, http) => {
+    inject([XHRBackend, CustomInterceptor, Http], (backend: MockBackend, interceptor, http) => {
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockError(new Error("Response error"));
       });
@@ -121,7 +109,7 @@ describe('custom-http', () => {
     })));
 
   it('should emit error event without a catch', fakeAsync(
-    inject([ConnectionBackend, CustomInterceptor, Http], (backend: MockBackend, interceptor, http) => {
+    inject([XHRBackend, CustomInterceptor, Http], (backend: MockBackend, interceptor, http) => {
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockError(new Error("Response error"));
       });
@@ -147,17 +135,13 @@ describe('custom-http-delay', () => {
       ],
       declarations: [AppComponent],
       providers: [
-        MockBackend,
         {
           provide: RequestOptions,
           useValue: requestOptions
         },
         {
-          provide: ConnectionBackend,
-          useExisting: MockBackend
-        }, {
           provide: XHRBackend,
-          useExisting: MockBackend
+          useClass: MockBackend
         }, {
           provide: CustomInterceptor,
           useValue: new CustomInterceptor(15)
@@ -175,7 +159,7 @@ describe('custom-http-delay', () => {
   });
 
   it('should wait before interceptor method to emit a request', fakeAsync(
-    inject([ConnectionBackend, CustomInterceptor, Http], (backend, interceptor, http) => {
+    inject([XHRBackend, CustomInterceptor, Http], (backend, interceptor, http) => {
       let body = JSON.stringify({ success: true });
       backend.connections.subscribe((connection: MockConnection) => {
         let options = new ResponseOptions({
