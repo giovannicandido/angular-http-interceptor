@@ -2,7 +2,6 @@ import {Request, Response, Http, XHRBackend, RequestOptions, RequestOptionsArgs}
 import {Injectable} from '@angular/core';
 
 import {Observable} from "rxjs/Observable";
-import {Subject} from "rxjs/Subject";
 
 import "rxjs/add/operator/do";
 import "rxjs/add/observable/forkJoin";
@@ -24,12 +23,12 @@ export class CustomHttp extends Http {
   }
 
   request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
-    
-    let beforeObservables = this.interceptors.map(_ =>  _.before(url))
-    
-    let subscribers = Observable.forkJoin(beforeObservables)
-    let response = this.intercept(super.request(url, options))
-    
+
+    let beforeObservables = this.interceptors.map(_ =>  _.before(url));
+
+    let subscribers = Observable.forkJoin(beforeObservables);
+    let response = this.intercept(super.request(url, options));
+
     return Observable.concat(subscribers, response);
   }
 
@@ -43,13 +42,13 @@ export class CustomHttp extends Http {
   }
 
   private emitAfter(res: any) {
-    for(let interceptor of this.interceptors) {
+    for (let interceptor of this.interceptors) {
       interceptor.after(res);
     }
   }
 
   private emitError(error: any) {
-    for(let interceptor of this.interceptors) {
+    for (let interceptor of this.interceptors) {
       interceptor.error(error);
     }
   }

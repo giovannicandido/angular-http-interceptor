@@ -16,8 +16,8 @@ class CustomInterceptor implements Interceptor {
   // TODO use Observable.of(request).delay(this.delay) bug: https://github.com/angular/angular/issues/10127
   before(request: any): Observable<any> {
     return Observable.fromPromise(new Promise((resolve, reject) => {
-      setTimeout(() => resolve(), this.delay)
-    }))
+      setTimeout(() => resolve(), this.delay);
+    }));
   }
   after(response: any) {
   }
@@ -67,9 +67,9 @@ describe('custom-http', () => {
 
   it('should emit before event', fakeAsync(
     inject([CustomInterceptor, Http], (interceptor, http) => {
-      spyOn(interceptor, 'before')
-      http.get("fake")
-      tick(10)
+      spyOn(interceptor, 'before');
+      http.get("fake");
+      tick(10);
       expect(interceptor.before).toHaveBeenCalled();
     }
     )));
@@ -84,14 +84,13 @@ describe('custom-http', () => {
         connection.mockRespond(new Response(options));
       });
 
-      spyOn(interceptor, 'after')
+      spyOn(interceptor, 'after');
       // Without subscribe after is not called
       http.get("fake");
       tick(10);
-      expect(interceptor.after).not.toHaveBeenCalled();      
-      
-      http.get("fake").subscribe()
-      tick(1)
+      expect(interceptor.after).not.toHaveBeenCalled();
+      http.get("fake").subscribe();
+      tick(1);
       expect(interceptor.after).toHaveBeenCalled();
     })
   ));
@@ -101,7 +100,7 @@ describe('custom-http', () => {
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockError(new Error("Response error"));
       });
-      spyOn(interceptor, 'error')
+      spyOn(interceptor, 'error');
       http.get("fake").catch((e, c) => Observable.of(e)).subscribe();
       tick(10);
       expect(interceptor.error).toHaveBeenCalled();
@@ -117,8 +116,6 @@ describe('custom-http', () => {
       tick(10);
       expect(interceptor.error).toHaveBeenCalled();
     })));
-
-    
 });
 
 describe('custom-http-delay', () => {
@@ -166,15 +163,15 @@ describe('custom-http-delay', () => {
         });
         connection.mockRespond(new Response(options));
       });
-      spyOn(interceptor, 'error')
-      spyOn(interceptor, 'after')
+      spyOn(interceptor, 'error');
+      spyOn(interceptor, 'after');
       http.get("fake").subscribe();
       // 10 miliseconds pass
       tick(10);
       expect(interceptor.after).not.toHaveBeenCalled();
 
       // 100 miliseconds pass
-      tick(100)
+      tick(100);
       expect(interceptor.after).toHaveBeenCalled();
 
     })));
