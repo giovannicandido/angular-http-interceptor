@@ -1,7 +1,9 @@
 
 import { Component } from '@angular/core'
-import { RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions,
-  Response, Request, Headers } from '@angular/http'
+import {
+  RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions,
+  Response, Request, Headers
+} from '@angular/http'
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing"
 import { MockBackend, MockConnection } from "@angular/http/testing"
 
@@ -35,17 +37,23 @@ let comp: AppComponent
 let requestOptions = new RequestOptions()
 describe('custom-http', () => {
   let customInterceptor
+  let customInterceptor2
   beforeEach(() => {
     customInterceptor = new CustomInterceptor(0)
+    customInterceptor2 = new CustomInterceptor(0)
     spyOn(customInterceptor, 'before').and.callThrough()
     spyOn(customInterceptor, 'after').and.callThrough()
     spyOn(customInterceptor, 'error').and.callThrough()
+    spyOn(customInterceptor2, 'before').and.callThrough()
+    spyOn(customInterceptor2, 'after').and.callThrough()
+    spyOn(customInterceptor2, 'error').and.callThrough()
     //   // refine the test module by declaring the test component
     TestBed.configureTestingModule({
       imports: [
         HttpModule,
         InterceptorModule.withInterceptors([
-          { provide: Interceptor, useValue: customInterceptor }
+          { provide: Interceptor, useValue: customInterceptor },
+          { provide: Interceptor, useValue: customInterceptor2 }
         ])
       ],
       declarations: [AppComponent],
@@ -105,7 +113,7 @@ describe('custom-http', () => {
     inject([XHRBackend, CustomInterceptor, Http], (backend: MockBackend, interceptor, http) => {
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockError(new Error("Response error"))
-      });
+      })
       http.get("fake").catch((e) => Observable.of(e)).subscribe()
       tick(10)
       expect(interceptor.error).toHaveBeenCalled()
@@ -115,10 +123,35 @@ describe('custom-http', () => {
     inject([XHRBackend, CustomInterceptor, Http], (backend: MockBackend, interceptor, http) => {
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockError(new Error("Response error"))
-      });
+      })
       http.get("fake").subscribe()
       tick(10)
       expect(interceptor.error).toHaveBeenCalled()
+    })))
+
+  it('should call all interceptors', fakeAsync(
+    inject([XHRBackend, Http], (backend: MockBackend, http) => {
+      let body = JSON.stringify({ success: true })
+      backend.connections.subscribe((connection: MockConnection) => {
+        let options = new ResponseOptions({
+          body: body
+        })
+        if (connection.request.url === "error") {
+          connection.mockError(new Error("error"))
+        } else {
+          connection.mockRespond(new Response(options))
+        }
+      })
+      http.get("fake").subscribe()
+      tick(10)
+      expect(customInterceptor.before).toHaveBeenCalled()
+      expect(customInterceptor2.before).toHaveBeenCalled()
+      expect(customInterceptor.after).toHaveBeenCalled()
+      expect(customInterceptor2.after).toHaveBeenCalled()
+      http.get("error").subscribe()
+      tick(10)
+      expect(customInterceptor.error).toHaveBeenCalled()
+      expect(customInterceptor2.error).toHaveBeenCalled()
     })))
 
   describe("custom-http-request", () => {
@@ -146,9 +179,9 @@ describe('custom-http', () => {
         // With a request
         let url = 'https://www.google.com.br'
         let requestOptions = new RequestOptions()
-        requestOptions.body = { json: 'Value'}
+        requestOptions.body = { json: 'Value' }
         requestOptions.method = 1
-        requestOptions.headers = new Headers({"MyHeader": "Value"})
+        requestOptions.headers = new Headers({ "MyHeader": "Value" })
         http.request(url, requestOptions)
         requestOptions.url = url
         tick(100)
