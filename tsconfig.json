@@ -4,6 +4,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "lib": ["es6", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",

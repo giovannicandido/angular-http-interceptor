@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import { RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions, Headers, Response } from '@angular/http';
-import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
-import { MockBackend, MockConnection } from "@angular/http/testing";
+import { Component } from '@angular/core'
+import { RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions, Headers, Response } from '@angular/http'
+import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing"
+import { MockBackend, MockConnection } from "@angular/http/testing"
 
-import { LoginService, AjaxTimeoutInterceptor } from './ajaxtimeout';
-import { InterceptorModule } from '../interceptor.module';
+import { LoginService, AjaxTimeoutInterceptor } from './ajaxtimeout'
+import { InterceptorModule } from '../interceptor.module'
 
-let requestOptions = new RequestOptions();
+let requestOptions = new RequestOptions()
 
 class LoginServiceMock implements LoginService {
     login() {
@@ -16,8 +16,8 @@ class LoginServiceMock implements LoginService {
     }
 }
 describe('ajaxtimeout-service', () => {
-    let fixture: ComponentFixture<AppComponent>;
-    let comp: AppComponent;
+    let fixture: ComponentFixture<AppComponent>
+    let comp: AppComponent
 
     beforeEach(() => {
         //   // refine the test module by declaring the test component
@@ -40,20 +40,20 @@ describe('ajaxtimeout-service', () => {
                     useClass: LoginServiceMock
                 }
             ]
-        });
+        })
 
         //   // create component and test fixture
-        fixture = TestBed.createComponent(AppComponent);
+        fixture = TestBed.createComponent(AppComponent)
 
         //   // get test component from the fixture
-        comp = fixture.componentInstance;
+        comp = fixture.componentInstance
 
-    });
+    })
 
 
     it('should call the login method on 901', fakeAsync(
         inject([MockBackend, LoginService, Http], (backend, login, http) => {
-            let body = "You must login again";
+            let body = "You must login again"
             backend.connections.subscribe((connection: MockConnection) => {
                 let options = new ResponseOptions({
                     status: 901,
@@ -61,20 +61,20 @@ describe('ajaxtimeout-service', () => {
                     headers: new Headers({
                         'Content-Type': "text/html"
                     })
-                });
-                connection.mockRespond(new Response(options));
-            });
+                })
+                connection.mockRespond(new Response(options))
+            })
 
-            spyOn(login, 'loginExpired');
-            http.get("fake").subscribe();
-            tick(10);
-            expect(login.loginExpired).toHaveBeenCalled();
+            spyOn(login, 'loginExpired')
+            http.get("fake").subscribe()
+            tick(10)
+            expect(login.loginExpired).toHaveBeenCalled()
         })
-    ));
+    ))
 
     it('should NOT call the login method on other status', fakeAsync(
         inject([MockBackend, LoginService, Http], (backend, login, http) => {
-            let body = "You must login again";
+            let body = "You must login again"
             backend.connections.subscribe((connection: MockConnection) => {
                 let options = new ResponseOptions({
                     status: 200,
@@ -82,23 +82,23 @@ describe('ajaxtimeout-service', () => {
                     headers: new Headers({
                         'Content-Type': "text/html"
                     })
-                });
-                connection.mockRespond(new Response(options));
-            });
+                })
+                connection.mockRespond(new Response(options))
+            })
 
-            spyOn(login, 'loginExpired');
-            http.get("fake").subscribe();
-            tick(10);
-            expect(login.loginExpired).not.toHaveBeenCalled();
+            spyOn(login, 'loginExpired')
+            http.get("fake").subscribe()
+            tick(10)
+            expect(login.loginExpired).not.toHaveBeenCalled()
         })
-    ));
+    ))
 
     it('should implement toString', () => {
-        let dialogInterceptor = new AjaxTimeoutInterceptor(null);
-        expect(dialogInterceptor.toString()).toEqual("AjaxTimeoutInterceptor");
-    });
+        let dialogInterceptor = new AjaxTimeoutInterceptor(null)
+        expect(dialogInterceptor.toString()).toEqual("AjaxTimeoutInterceptor")
+    })
 
-});
+})
 
 @Component({
     selector: 'test-app-component',

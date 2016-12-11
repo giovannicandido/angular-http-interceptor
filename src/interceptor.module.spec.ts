@@ -2,20 +2,22 @@ import { Component } from "@angular/core"
 import { TestBed, ComponentFixture } from "@angular/core/testing"
 import {By} from '@angular/platform-browser';
 import { InterceptorModule } from "./interceptor.module"
-import { Request, Response, Http, HttpModule, ConnectionBackend } from "@angular/http"
+import { Request, Response, Http, HttpModule } from "@angular/http"
 import { Interceptor } from "./custom-http"
 import { Observable } from "rxjs/Observable"
 import "rxjs/add/observable/empty"
 
 class CustomInterceptor implements Interceptor {
     before(request: string | Request): Observable<any> {
+        console.log(request)
         return Observable.empty()
     }
     after(response: Response) {
+        console.log(response)
 
     }
     error(error: any) {
-
+        console.log(error)
     }
 }
 let fixture: ComponentFixture<AppComponent>;;

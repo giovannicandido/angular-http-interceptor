@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
-import {Response} from '@angular/http';
+import {Injectable} from '@angular/core'
+import {Response} from '@angular/http'
 
-import { Observable } from "rxjs/Observable";
-import {Interceptor} from "../index";
-declare var UIkit: any;
+import { Observable } from "rxjs/Observable"
+import {Interceptor} from "../index"
+declare var UIkit: any
 
 /**
  * Default implementation use UIKit Notifications and Dialog
@@ -13,15 +13,15 @@ declare var UIkit: any;
 @Injectable()
 export class DialogService {
     showMessage(message: string, status: string) {
-        UIkit.notify(message, status);
+        UIkit.notify(message, status)
     }
 
     showError(message: string, status: string) {
-        UIkit.modal.alert(message);
+        UIkit.modal.alert(`${status} - ${message}`)
     }
 
     confirm(message: string, func: () => void) {
-        UIkit.confirm(message, func);
+        UIkit.confirm(message, func)
     }
 }
 
@@ -30,33 +30,33 @@ export class DialogInterceptor implements Interceptor {
     constructor(private dialog: DialogService) {
     }
     before(request: any): Observable<any> {
-        return Observable.of(request);
+        return Observable.of(request)
     }
     after(response: any) {
         if (response.status >= 200 && response.status < 300
             && (response.text() != null && (this.isHeaderStartsWithValue(response, 'Content-Type', 'text/plain')
                 || this.isHeaderStartsWithValue(response, 'Content-Type', 'text/html')))) {
-            this.dialog.showMessage(response.text(), 'info');
+            this.dialog.showMessage(response.text(), 'info')
         }
 
         if (response.status >= 500 && response.status < 600) {
-            this.dialog.showError(response.text(), response.status);
+            this.dialog.showError(response.text(), response.status)
         } else if (response.status >= 400 && response.status < 500) {
-            this.dialog.showError(response.text(), response.status);
+            this.dialog.showError(response.text(), response.status)
 
         }
 
     }
     error(err: any) {
-        this.dialog.showError(err, 'error');
+        this.dialog.showError(err, 'error')
     }
 
     isHeaderStartsWithValue(response: Response, header: string, value: string): boolean {
-        return response.headers.has(header) && response.headers.get(header).startsWith(value);
+        return response.headers.has(header) && response.headers.get(header).startsWith(value)
     }
 
     toString() {
-        return "DialogInterceptor";
+        return "DialogInterceptor"
     }
 
 }
