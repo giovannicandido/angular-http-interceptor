@@ -4,10 +4,11 @@
   "description": "A interceptor module to http calls",
   "main": "index.js",
   "scripts": {
+    "clean": "rm -rf dist/",
     "lint": "tslint ./src/**/*.ts -t verbose",
     "lint:fix": "tslint ./src/**/*.ts --fix",
-    "test": "tsc && concurrently \"tsc -w\" \"karma start karma.conf.js\"",
-    "test-once": "tsc && karma start karma.conf.js --single-run",
+    "test": "npm run clean && tsc && concurrently \"tsc -w\" \"karma start karma.conf.js\"",
+    "test-once": "npm run clean && tsc && karma start karma.conf.js --single-run",
     "compile": "tsc",
     "watch": "tsc --watch",
     "build": "npm run compile",

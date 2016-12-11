@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions, Headers, Response} from '@angular/http';
+import { Component } from '@angular/core';
+import { RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions, Headers, Response } from '@angular/http';
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
 import { MockBackend, MockConnection } from "@angular/http/testing";
 
@@ -26,12 +26,10 @@ describe('dialog-service', () => {
             declarations: [AppComponent],
             providers: [
                 MockBackend,
-                DialogService, {
+                DialogService,
+                {
                     provide: RequestOptions,
                     useValue: requestOptions
-                }, {
-                    provide: XHRBackend,
-                    useExisting: MockBackend
                 }, {
                     provide: XHRBackend,
                     useExisting: MockBackend

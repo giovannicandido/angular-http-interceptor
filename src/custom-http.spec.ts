@@ -1,6 +1,7 @@
 
-import {Component} from '@angular/core';
-import {RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions, Response} from '@angular/http';
+import { Component } from '@angular/core';
+import { RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions,
+  Response, Request, Headers } from '@angular/http';
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing";
 import { MockBackend, MockConnection } from "@angular/http/testing";
 
@@ -12,11 +13,13 @@ import "rxjs/add/operator/delay";
 import "rxjs/add/observable/fromPromise";
 
 class CustomInterceptor implements Interceptor {
+  lastRequest;
   constructor(private delay: number) { }
   // TODO use Observable.of(request).delay(this.delay) bug: https://github.com/angular/angular/issues/10127
   before(request: any): Observable<any> {
+    this.lastRequest = request;
     return Observable.fromPromise(new Promise((resolve, reject) => {
-      setTimeout(() => resolve(), this.delay);
+      setTimeout(() => resolve(request), this.delay);
     }));
   }
   after(response: any) {
@@ -28,16 +31,19 @@ class CustomInterceptor implements Interceptor {
 let fixture: ComponentFixture<AppComponent>;
 let comp: AppComponent;
 let requestOptions = new RequestOptions();
-
 describe('custom-http', () => {
-
+  let customInterceptor;
   beforeEach(() => {
+    customInterceptor = new CustomInterceptor(0);
+    spyOn(customInterceptor, 'before').and.callThrough();
+    spyOn(customInterceptor, 'after').and.callThrough();
+    spyOn(customInterceptor, 'error').and.callThrough();
     //   // refine the test module by declaring the test component
     TestBed.configureTestingModule({
       imports: [
         HttpModule,
         InterceptorModule.withInterceptors([
-          { provide: Interceptor, useExisting: CustomInterceptor }
+          { provide: Interceptor, useValue: customInterceptor }
         ])
       ],
       declarations: [AppComponent],
@@ -51,7 +57,7 @@ describe('custom-http', () => {
           useClass: MockBackend
         }, {
           provide: CustomInterceptor,
-          useValue: new CustomInterceptor(0)
+          useValue: customInterceptor
         }
       ]
     });
@@ -67,12 +73,11 @@ describe('custom-http', () => {
 
   it('should emit before event', fakeAsync(
     inject([CustomInterceptor, Http], (interceptor, http) => {
-      spyOn(interceptor, 'before');
       http.get("fake");
       tick(10);
       expect(interceptor.before).toHaveBeenCalled();
-    }
-    )));
+    }))
+  );
 
   it('should emit after event', fakeAsync(
     inject([XHRBackend, CustomInterceptor, Http], (backend, interceptor, http) => {
@@ -84,7 +89,6 @@ describe('custom-http', () => {
         connection.mockRespond(new Response(options));
       });
 
-      spyOn(interceptor, 'after');
       // Without subscribe after is not called
       http.get("fake");
       tick(10);
@@ -100,7 +104,6 @@ describe('custom-http', () => {
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockError(new Error("Response error"));
       });
-      spyOn(interceptor, 'error');
       http.get("fake").catch((e, c) => Observable.of(e)).subscribe();
       tick(10);
       expect(interceptor.error).toHaveBeenCalled();
@@ -111,16 +114,56 @@ describe('custom-http', () => {
       backend.connections.subscribe((connection: MockConnection) => {
         connection.mockError(new Error("Response error"));
       });
-      spyOn(interceptor, 'error')
       http.get("fake").subscribe();
       tick(10);
       expect(interceptor.error).toHaveBeenCalled();
     })));
+
+  describe("custom-http-request", () => {
+    it('should pass the request to interceptor', fakeAsync(
+      inject([XHRBackend, CustomInterceptor, Http], (backend, interceptor, http: CustomHttp) => {
+        // With a request
+        let request = new Request({ url: 'https://www.google.com.br' });
+        http.request(request);
+        tick(100);
+        expect(interceptor.before).toHaveBeenCalledWith(request);
+      })));
+
+    it('should pass requestOptions from request to interceptor', fakeAsync(
+      inject([XHRBackend, CustomInterceptor, Http], (backend, interceptor, http: CustomHttp) => {
+        // With a request
+        let url = 'https://www.google.com.br';
+        let request = new RequestOptions({ url: url });
+        http.request(url);
+        tick(100);
+        expect(customInterceptor.before).toHaveBeenCalledWith(request);
+      })));
+
+    it('should pass requestOptions merged from request to interceptor', fakeAsync(
+      inject([XHRBackend, CustomInterceptor, Http], (backend, interceptor, http: CustomHttp) => {
+        // With a request
+        let url = 'https://www.google.com.br';
+        let requestOptions = new RequestOptions();
+        requestOptions.body = { json: 'Value'};
+        requestOptions.method = 1;
+        requestOptions.headers = new Headers({"MyHeader": "Value"});
+        http.request(url, requestOptions);
+        requestOptions.url = url;
+        let request = new Request(requestOptions);
+        tick(100);
+        expect(customInterceptor.before).toHaveBeenCalledWith(requestOptions);
+      })));
+  });
+
 });
 
 describe('custom-http-delay', () => {
-
+  let customInterceptor;
   beforeEach(() => {
+    customInterceptor = new CustomInterceptor(15);
+    spyOn(customInterceptor, 'before').and.callThrough();
+    spyOn(customInterceptor, 'after').and.callThrough();
+    spyOn(customInterceptor, 'error').and.callThrough();
     //   // refine the test module by declaring the test component
     TestBed.configureTestingModule({
       imports: [
@@ -140,7 +183,7 @@ describe('custom-http-delay', () => {
           useClass: MockBackend
         }, {
           provide: CustomInterceptor,
-          useValue: new CustomInterceptor(15)
+          useValue: customInterceptor
         }
       ]
     });
@@ -163,8 +206,7 @@ describe('custom-http-delay', () => {
         });
         connection.mockRespond(new Response(options));
       });
-      spyOn(interceptor, 'error');
-      spyOn(interceptor, 'after');
+
       http.get("fake").subscribe();
       // 10 miliseconds pass
       tick(10);

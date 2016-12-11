@@ -10,7 +10,7 @@ import "rxjs/add/observable/concat";
 
 @Injectable()
 export abstract class Interceptor {
-  abstract before(request: string | Request): Observable<any>;
+  abstract before(request: Request): Observable<any>;
   abstract after(response: Response): void;
   abstract error(err: any): void;
 }
@@ -23,8 +23,20 @@ export class CustomHttp extends Http {
   }
 
   request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
+    /**
+     * Make sure interceptor is called with a request not a url
+     */
+    let beforeCallOption;
+    if (typeof url === 'string' && options) {
+      options.url = url;
+      beforeCallOption = options;
+    }else if (typeof url === 'string') {
+      beforeCallOption = new RequestOptions({url: url});
+    }else {
+      beforeCallOption = url;
+    }
 
-    let beforeObservables = this.interceptors.map(_ =>  _.before(url));
+    let beforeObservables = this.interceptors.map(_ =>  _.before(beforeCallOption));
 
     let subscribers = Observable.forkJoin(beforeObservables);
     let response = this.intercept(super.request(url, options));

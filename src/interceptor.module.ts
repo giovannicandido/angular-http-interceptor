@@ -13,10 +13,10 @@ export class InterceptorModule {
       if (type instanceof Type) {
         return { provide: opaqueToken, useClass: type, multi: true };
       }else {
-        let typeAny = type as any
-        typeAny.provide = opaqueToken
-        typeAny.multi = true
-        return typeAny
+        let typeAny = type as any;
+        typeAny.provide = opaqueToken;
+        typeAny.multi = true;
+        return typeAny;
       }
     });
 
