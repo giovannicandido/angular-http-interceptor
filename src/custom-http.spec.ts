@@ -26,34 +26,36 @@ class CustomInterceptor implements Interceptor {
     }))
   }
   after(response: any) {
-    console.info(response)
+    return response
   }
   error(err: any) {
-    console.info(err)
+    return err
   }
 }
 
 class EmptyInterceptor implements Interceptor {
   before(request: Request): Observable<any> {
+    console.log(request)
     return Observable.empty()
   }
   after(response: any) {
-    console.info(response)
+    return response
   }
   error(err: any) {
-    console.info(err)
+    return err
   }
 }
 
 class NullInterceptor implements Interceptor {
   before(request: Request): Observable<any> {
+    console.log(request)
     return null
   }
   after(response: any) {
-    console.info(response)
+    return response
   }
   error(err: any) {
-    console.info(err)
+    return err
   }
 }
 
