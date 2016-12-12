@@ -20,7 +20,6 @@ class CustomInterceptor implements Interceptor {
   // TODO use Observable.of(request).delay(this.delay) bug: https://github.com/angular/angular/issues/10127
   before(request: Request): Observable<any> {
     this.lastRequest = request
-    console.info(request.headers)
     request.headers.set("Delay " + this.delay.toString(), this.delay.toString())
     return Observable.fromPromise(new Promise((resolve) => {
       setTimeout(() => resolve(request), this.delay)
@@ -212,17 +211,23 @@ describe('custom-http', () => {
 
 describe('custom-http-delay', () => {
   let customInterceptor
+  let customInterceptor2
   beforeEach(() => {
     customInterceptor = new CustomInterceptor(15)
+    customInterceptor2 = new CustomInterceptor(20)
     spyOn(customInterceptor, 'before').and.callThrough()
     spyOn(customInterceptor, 'after').and.callThrough()
     spyOn(customInterceptor, 'error').and.callThrough()
+    spyOn(customInterceptor2, 'before').and.callThrough()
+    spyOn(customInterceptor2, 'after').and.callThrough()
+    spyOn(customInterceptor2, 'error').and.callThrough()
     //   // refine the test module by declaring the test component
     TestBed.configureTestingModule({
       imports: [
         HttpModule,
         InterceptorModule.withInterceptors([
-          { provide: Interceptor, useExisting: CustomInterceptor }
+          { provide: Interceptor, useValue: customInterceptor },
+          { provide: Interceptor, useValue: customInterceptor2}
         ])
       ],
       declarations: [AppComponent],
@@ -251,23 +256,37 @@ describe('custom-http-delay', () => {
   })
 
   it('should wait before interceptor method to emit a request', fakeAsync(
-    inject([XHRBackend, CustomInterceptor, Http], (backend, interceptor, http) => {
+    inject([XHRBackend, Http], (backend, http) => {
       let body = JSON.stringify({ success: true })
+      let backendCalled = false
       backend.connections.subscribe((connection: MockConnection) => {
         let options = new ResponseOptions({
           body: body
         })
+        backendCalled = true
         connection.mockRespond(new Response(options))
       })
 
       http.get("fake").subscribe()
+
+      expect(customInterceptor.before).toHaveBeenCalled()
+      expect(customInterceptor2.before).toHaveBeenCalled()
+       expect(backendCalled).toBeFalsy()
       // 10 miliseconds pass
       tick(10)
-      expect(interceptor.after).not.toHaveBeenCalled()
-
-      // 100 miliseconds pass
-      tick(100)
-      expect(interceptor.after).toHaveBeenCalled()
+      expect(customInterceptor.after).not.toHaveBeenCalled()
+      expect(customInterceptor2.after).not.toHaveBeenCalled()
+      expect(backendCalled).toBeFalsy()
+      // 16
+      tick(6)
+      expect(customInterceptor.after).not.toHaveBeenCalled()
+      expect(customInterceptor2.after).not.toHaveBeenCalled()
+      expect(backendCalled).toBeFalsy()
+      // 26 miliseconds pass
+      tick(20)
+      expect(customInterceptor.after).toHaveBeenCalled()
+      expect(customInterceptor2.after).toHaveBeenCalled()
+      expect(backendCalled).toBeTruthy()
 
     })))
 })
