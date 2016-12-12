@@ -17,8 +17,40 @@ This library is used by [https://github.com/atende/angular-spa](https://github.c
 
 # How to use
 
-You need to import HttpModule and `InterceptorModule` and provide the interceptors. The `IntercetorModule.withInterceptors()` static function is used
-to create the module with the providers.
+There is two ways to provide interceptors, one override all previous interceptors the later concat then.
+
+## Without override
+
+    @NgModule({
+        imports: [
+            HttpModule,
+            InterceptorModule
+        ],
+        providers: [
+            {
+                provide: Interceptor,
+                useClass: CustomInterceptor
+                multi: true
+            }, {
+                provide: Interceptor,
+                useClass: CustomInterceptor2
+                multi: true
+            }
+        ]
+    })
+
+Override previous:
+
+    @NgModule({
+        imports: [
+            HttpModule,
+            InterceptorModule.withInterceptors([CustomInterceptor, CustomInterceptor2])
+        ]
+    })
+If you use `withInterceptors` it will override any interceptor created by other module or library. 
+
+The library [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa) provide a `RefreshTokenHttpInterceptor` 
+that is good to maintain, the `withInterceptors` will override that. You can still provide it again
 
 The method `InterceptorModule.withInterceptors()` accepts all kinds of providers (ValueProviders, FactoryProviders...) and plain classes. Exemples:
 

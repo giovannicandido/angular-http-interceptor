@@ -33,6 +33,30 @@ class CustomInterceptor implements Interceptor {
   }
 }
 
+class EmptyInterceptor implements Interceptor {
+  before(request: Request): Observable<any> {
+    return Observable.empty()
+  }
+  after(response: any) {
+    console.info(response)
+  }
+  error(err: any) {
+    console.info(err)
+  }
+}
+
+class NullInterceptor implements Interceptor {
+  before(request: Request): Observable<any> {
+    return null
+  }
+  after(response: any) {
+    console.info(response)
+  }
+  error(err: any) {
+    console.info(err)
+  }
+}
+
 let fixture: ComponentFixture<AppComponent>
 let comp: AppComponent
 let requestOptions = new RequestOptions()
@@ -208,26 +232,31 @@ describe('custom-http', () => {
   })
 
 })
-
-describe('custom-http-delay', () => {
+describe('custom-http-delay-null-interceptor', () => {
   let customInterceptor
   let customInterceptor2
+  let customInterceptor3
   beforeEach(() => {
-    customInterceptor = new CustomInterceptor(15)
-    customInterceptor2 = new CustomInterceptor(20)
+    customInterceptor = new CustomInterceptor(20)
+    customInterceptor2 = new CustomInterceptor(15)
+    customInterceptor3 = new NullInterceptor()
     spyOn(customInterceptor, 'before').and.callThrough()
     spyOn(customInterceptor, 'after').and.callThrough()
     spyOn(customInterceptor, 'error').and.callThrough()
     spyOn(customInterceptor2, 'before').and.callThrough()
     spyOn(customInterceptor2, 'after').and.callThrough()
     spyOn(customInterceptor2, 'error').and.callThrough()
+    spyOn(customInterceptor3, 'before').and.callThrough()
+    spyOn(customInterceptor3, 'after').and.callThrough()
+    spyOn(customInterceptor3, 'error').and.callThrough()
     //   // refine the test module by declaring the test component
     TestBed.configureTestingModule({
       imports: [
         HttpModule,
         InterceptorModule.withInterceptors([
           { provide: Interceptor, useValue: customInterceptor },
-          { provide: Interceptor, useValue: customInterceptor2}
+          { provide: Interceptor, useValue: customInterceptor2 },
+          { provide: Interceptor, useValue: customInterceptor3 }
         ])
       ],
       declarations: [AppComponent],
@@ -239,9 +268,6 @@ describe('custom-http-delay', () => {
         {
           provide: XHRBackend,
           useClass: MockBackend
-        }, {
-          provide: CustomInterceptor,
-          useValue: customInterceptor
         }
       ]
     })
@@ -258,35 +284,114 @@ describe('custom-http-delay', () => {
   it('should wait before interceptor method to emit a request', fakeAsync(
     inject([XHRBackend, Http], (backend, http) => {
       let body = JSON.stringify({ success: true })
-      let backendCalled = false
       backend.connections.subscribe((connection: MockConnection) => {
         let options = new ResponseOptions({
           body: body
         })
-        backendCalled = true
         connection.mockRespond(new Response(options))
       })
 
       http.get("fake").subscribe()
-
       expect(customInterceptor.before).toHaveBeenCalled()
       expect(customInterceptor2.before).toHaveBeenCalled()
-       expect(backendCalled).toBeFalsy()
+      expect(customInterceptor3.before).toHaveBeenCalled()
+
       // 10 miliseconds pass
       tick(10)
       expect(customInterceptor.after).not.toHaveBeenCalled()
       expect(customInterceptor2.after).not.toHaveBeenCalled()
-      expect(backendCalled).toBeFalsy()
+      expect(customInterceptor3.after).not.toHaveBeenCalled()
       // 16
       tick(6)
       expect(customInterceptor.after).not.toHaveBeenCalled()
       expect(customInterceptor2.after).not.toHaveBeenCalled()
-      expect(backendCalled).toBeFalsy()
+      expect(customInterceptor3.after).not.toHaveBeenCalled()
       // 26 miliseconds pass
       tick(20)
       expect(customInterceptor.after).toHaveBeenCalled()
       expect(customInterceptor2.after).toHaveBeenCalled()
-      expect(backendCalled).toBeTruthy()
+      expect(customInterceptor3.after).toHaveBeenCalled()
+
+    })))
+})
+describe('custom-http-delay-empty-interceptor', () => {
+  let customInterceptor
+  let customInterceptor2
+  let customInterceptor3
+  beforeEach(() => {
+    customInterceptor = new CustomInterceptor(20)
+    customInterceptor2 = new CustomInterceptor(15)
+    customInterceptor3 = new EmptyInterceptor()
+    spyOn(customInterceptor, 'before').and.callThrough()
+    spyOn(customInterceptor, 'after').and.callThrough()
+    spyOn(customInterceptor, 'error').and.callThrough()
+    spyOn(customInterceptor2, 'before').and.callThrough()
+    spyOn(customInterceptor2, 'after').and.callThrough()
+    spyOn(customInterceptor2, 'error').and.callThrough()
+    spyOn(customInterceptor3, 'before').and.callThrough()
+    spyOn(customInterceptor3, 'after').and.callThrough()
+    spyOn(customInterceptor3, 'error').and.callThrough()
+    //   // refine the test module by declaring the test component
+    TestBed.configureTestingModule({
+      imports: [
+        HttpModule,
+        InterceptorModule.withInterceptors([
+          { provide: Interceptor, useValue: customInterceptor },
+          { provide: Interceptor, useValue: customInterceptor2 },
+          { provide: Interceptor, useValue: customInterceptor3 }
+        ])
+      ],
+      declarations: [AppComponent],
+      providers: [
+        {
+          provide: RequestOptions,
+          useValue: requestOptions
+        },
+        {
+          provide: XHRBackend,
+          useClass: MockBackend
+        }
+      ]
+    })
+
+
+    //   // create component and test fixture
+    fixture = TestBed.createComponent(AppComponent)
+
+    //   // get test component from the fixture
+    comp = fixture.componentInstance
+
+  })
+
+  it('should wait before interceptor method to emit a request', fakeAsync(
+    inject([XHRBackend, Http], (backend, http) => {
+      let body = JSON.stringify({ success: true })
+      backend.connections.subscribe((connection: MockConnection) => {
+        let options = new ResponseOptions({
+          body: body
+        })
+        connection.mockRespond(new Response(options))
+      })
+
+      http.get("fake").subscribe()
+      expect(customInterceptor.before).toHaveBeenCalled()
+      expect(customInterceptor2.before).toHaveBeenCalled()
+      expect(customInterceptor3.before).toHaveBeenCalled()
+      // 10 miliseconds pass
+      tick(10)
+      expect(customInterceptor.after).not.toHaveBeenCalled()
+      expect(customInterceptor2.after).not.toHaveBeenCalled()
+      expect(customInterceptor3.after).not.toHaveBeenCalled()
+      // 16
+      tick(6)
+      expect(customInterceptor.after).not.toHaveBeenCalled()
+      expect(customInterceptor2.after).not.toHaveBeenCalled()
+      expect(customInterceptor3.after).not.toHaveBeenCalled()
+      // 26 miliseconds pass
+      tick(20)
+      expect(customInterceptor.after).toHaveBeenCalled()
+      expect(customInterceptor2.after).toHaveBeenCalled()
+      expect(customInterceptor3.after).toHaveBeenCalled()
 
     })))
 })

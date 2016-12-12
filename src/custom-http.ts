@@ -1,11 +1,13 @@
 import { Request, Response, Http, XHRBackend, RequestOptions, RequestOptionsArgs, Headers } from '@angular/http'
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 
 import { Observable } from "rxjs/Observable"
 
 import "rxjs/add/operator/do"
+import "rxjs/add/operator/mergeMap"
 import "rxjs/add/observable/forkJoin"
-import "rxjs/add/observable/concat"
+import "rxjs/add/operator/concat"
+import "rxjs/add/operator/skip"
 
 
 @Injectable()
@@ -18,7 +20,7 @@ export abstract class Interceptor {
 
 @Injectable()
 export class CustomHttp extends Http {
-  constructor(private interceptors: Interceptor[], backend: XHRBackend, defaultOptions: RequestOptions) {
+  constructor(@Inject(Interceptor) private interceptors: Interceptor[], backend: XHRBackend, defaultOptions: RequestOptions) {
     super(backend, defaultOptions)
   }
 
@@ -38,12 +40,20 @@ export class CustomHttp extends Http {
       beforeCallOption = url
     }
 
-    let beforeObservables = this.interceptors.map(_ => _.before(beforeCallOption))
+    let beforeObservables = this.interceptors.map(_ => {
+      let method = _.before(beforeCallOption)
+      if (method === null || method === undefined) {
+        return Observable.of("")
+      }else {
+        return method
+      }
+    })
 
     let subscribers = Observable.forkJoin(beforeObservables)
-    let response = this.intercept(super.request(url, options))
+    let response = super.request(url, options)
 
-    return Observable.concat(subscribers, response)
+    let r =  subscribers.concat(response).skip(1)
+    return this.intercept(r)
   }
 
   intercept(observable: Observable<Response>): Observable<Response> {

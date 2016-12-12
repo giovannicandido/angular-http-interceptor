@@ -74,14 +74,21 @@ describe('interceptor-module-withInterceptors', function () {
         TestBed.configureTestingModule({
             imports: [
                 HttpModule,
-                InterceptorModule.withInterceptors([{ provide: Interceptor, useValue: interceptor1 }]),
-                InterceptorModule.withInterceptors([{ provide: Interceptor, useValue: interceptor2 }])
+                InterceptorModule
             ],
             declarations: [AppComponent],
             providers: [
                 {
                     provide: XHRBackend,
                     useClass: MockBackend
+                }, {
+                    provide: Interceptor,
+                    useValue: interceptor1,
+                    multi: true
+                }, {
+                    provide: Interceptor,
+                    useValue: interceptor2,
+                    multi: true
                 }
             ]
         })
