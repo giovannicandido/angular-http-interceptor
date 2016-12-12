@@ -15,11 +15,13 @@ import "rxjs/add/operator/delay"
 import "rxjs/add/observable/fromPromise"
 
 class CustomInterceptor implements Interceptor {
-  lastRequest
+  lastRequest: Request
   constructor(private delay: number) { }
   // TODO use Observable.of(request).delay(this.delay) bug: https://github.com/angular/angular/issues/10127
-  before(request: any): Observable<any> {
+  before(request: Request): Observable<any> {
     this.lastRequest = request
+    console.info(request.headers)
+    request.headers.set("Delay " + this.delay.toString(), this.delay.toString())
     return Observable.fromPromise(new Promise((resolve) => {
       setTimeout(() => resolve(request), this.delay)
     }))
@@ -36,11 +38,11 @@ let fixture: ComponentFixture<AppComponent>
 let comp: AppComponent
 let requestOptions = new RequestOptions()
 describe('custom-http', () => {
-  let customInterceptor
-  let customInterceptor2
+  let customInterceptor: CustomInterceptor
+  let customInterceptor2: CustomInterceptor
   beforeEach(() => {
     customInterceptor = new CustomInterceptor(0)
-    customInterceptor2 = new CustomInterceptor(0)
+    customInterceptor2 = new CustomInterceptor(1)
     spyOn(customInterceptor, 'before').and.callThrough()
     spyOn(customInterceptor, 'after').and.callThrough()
     spyOn(customInterceptor, 'error').and.callThrough()
@@ -154,6 +156,22 @@ describe('custom-http', () => {
       expect(customInterceptor2.error).toHaveBeenCalled()
     })))
 
+  it('should let all interceptors change request', fakeAsync(
+    inject([XHRBackend, Http], (backend: MockBackend, http) => {
+      let body = JSON.stringify({ success: true })
+      backend.connections.subscribe((connection: MockConnection) => {
+        let options = new ResponseOptions({
+          body: body
+        })
+        connection.mockRespond(new Response(options))
+      })
+      http.get("fake").subscribe()
+      tick(10)
+      expect(customInterceptor.lastRequest.headers.has("Delay 0")).toBeTruthy()
+      expect(customInterceptor.lastRequest.headers.has("Delay 1")).toBeTruthy()
+    })))
+
+
   describe("custom-http-request", () => {
     it('should pass the request to interceptor', fakeAsync(
       inject([CustomInterceptor, Http], (interceptor, http: CustomHttp) => {
@@ -169,6 +187,7 @@ describe('custom-http', () => {
         // With a request
         let url = 'https://www.google.com.br'
         let request = new RequestOptions({ url: url })
+        request.headers = new Headers()
         http.request(url)
         tick(100)
         expect(customInterceptor.before).toHaveBeenCalledWith(request)

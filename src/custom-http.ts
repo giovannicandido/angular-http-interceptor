@@ -1,7 +1,7 @@
-import {Request, Response, Http, XHRBackend, RequestOptions, RequestOptionsArgs} from '@angular/http'
-import {Injectable} from '@angular/core';
+import { Request, Response, Http, XHRBackend, RequestOptions, RequestOptionsArgs, Headers } from '@angular/http'
+import { Injectable } from '@angular/core';
 
-import {Observable} from "rxjs/Observable"
+import { Observable } from "rxjs/Observable"
 
 import "rxjs/add/operator/do"
 import "rxjs/add/observable/forkJoin"
@@ -30,13 +30,15 @@ export class CustomHttp extends Http {
     if (typeof url === 'string' && options) {
       options.url = url
       beforeCallOption = options
-    }else if (typeof url === 'string') {
-      beforeCallOption = new RequestOptions({url: url})
-    }else {
+    } else if (typeof url === 'string') {
+      let options = new RequestOptions({ url: url })
+      options.headers = new Headers()
+      beforeCallOption = options
+    } else {
       beforeCallOption = url
     }
 
-    let beforeObservables = this.interceptors.map(_ =>  _.before(beforeCallOption))
+    let beforeObservables = this.interceptors.map(_ => _.before(beforeCallOption))
 
     let subscribers = Observable.forkJoin(beforeObservables)
     let response = this.intercept(super.request(url, options))
