@@ -8,6 +8,7 @@ import "rxjs/add/operator/mergeMap"
 import "rxjs/add/observable/forkJoin"
 import "rxjs/add/operator/concat"
 import "rxjs/add/operator/skip"
+import "rxjs/add/operator/defaultIfEmpty"
 
 
 @Injectable()
@@ -43,9 +44,9 @@ export class CustomHttp extends Http {
     let beforeObservables = this.interceptors.map(_ => {
       let method = _.before(beforeCallOption)
       if (method === null || method === undefined) {
-        return Observable.of("")
+        return Observable.empty().defaultIfEmpty("EMPTY_BEFORE")
       }else {
-        return method
+        return method.defaultIfEmpty("EMPTY_BEFORE")
       }
     })
 
