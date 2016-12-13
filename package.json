@@ -1,6 +1,6 @@
 {
   "name": "angular-http-interceptor",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A interceptor module to http calls",
   "main": "index.js",
   "scripts": {
