@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser'
 import { InterceptorModule } from "./interceptor.module"
 import { Request, Response, Http, HttpModule, XHRBackend, ResponseOptions } from "@angular/http"
 import { MockBackend, MockConnection } from "@angular/http/testing"
-import { Interceptor } from "./custom-http"
+import { Interceptor } from "./interfaces"
 import { Observable } from "rxjs/Observable"
 import "rxjs/add/observable/empty"
 

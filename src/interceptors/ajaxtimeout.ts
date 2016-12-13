@@ -1,7 +1,10 @@
 import { Injectable } from "@angular/core"
-import { Interceptor } from "../index"
+import { Request } from "@angular/http"
 import { Observable } from "rxjs/Observable"
-import {Request} from "@angular/http"
+
+import "rxjs/add/observable/of"
+
+import { Interceptor } from "../interfaces"
 
 @Injectable()
 export abstract class LoginService {

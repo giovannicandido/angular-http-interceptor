@@ -1,6 +1,8 @@
 import { NgModule, Provider, ModuleWithProviders, OpaqueToken, Type } from '@angular/core'
 import { Http, XHRBackend, RequestOptions } from '@angular/http'
-import { CustomHttp, Interceptor } from './custom-http'
+
+import { Interceptor } from './interfaces'
+import { CustomHttp } from "./custom-http"
 
 @NgModule({
   providers: [

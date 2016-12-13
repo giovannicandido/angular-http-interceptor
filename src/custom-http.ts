@@ -1,27 +1,20 @@
 import { Request, Response, Http, XHRBackend, RequestOptions, RequestOptionsArgs, Headers } from '@angular/http'
-import { Injectable, Inject } from '@angular/core';
+import { Injectable, Inject } from '@angular/core'
 
 import { Observable } from "rxjs/Observable"
 
 import "rxjs/add/operator/do"
-import "rxjs/add/operator/mergeMap"
 import "rxjs/add/observable/forkJoin"
 import "rxjs/add/operator/concat"
-import "rxjs/add/operator/skip"
 import "rxjs/add/operator/defaultIfEmpty"
+import "rxjs/add/observable/of"
+import "rxjs/add/operator/catch"
 
-
-@Injectable()
-export abstract class Interceptor {
-  abstract before(request: Request): Observable<any>;
-  abstract after(response: Response): void;
-  abstract error(err: any): void;
-}
-
+import { Interceptor } from "./interfaces"
 
 @Injectable()
 export class CustomHttp extends Http {
-  constructor(@Inject(Interceptor) private interceptors: Interceptor[], backend: XHRBackend, defaultOptions: RequestOptions) {
+  constructor( @Inject(Interceptor) private interceptors: Interceptor[], backend: XHRBackend, defaultOptions: RequestOptions) {
     super(backend, defaultOptions)
   }
 
@@ -45,7 +38,7 @@ export class CustomHttp extends Http {
       let method = _.before(beforeCallOption)
       if (method === null || method === undefined) {
         return Observable.empty().defaultIfEmpty("EMPTY_BEFORE")
-      }else {
+      } else {
         return method.defaultIfEmpty("EMPTY_BEFORE")
       }
     })
@@ -53,7 +46,7 @@ export class CustomHttp extends Http {
     let subscribers = Observable.forkJoin(beforeObservables)
     let response = super.request(url, options)
 
-    let r =  subscribers.concat(response).skip(1)
+    let r = subscribers.concat(response)
     return this.intercept(r)
   }
 
