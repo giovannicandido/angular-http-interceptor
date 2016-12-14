@@ -17,6 +17,8 @@ This library is used by [https://github.com/atende/angular-spa](https://github.c
 
 # How to use
 
+Examples in [https://github.com/atende/angular-spa-example](https://github.com/atende/angular-spa-example)
+
 There is two ways to provide interceptors, one override all previous interceptors the later concat then.
 
 ## Without override
