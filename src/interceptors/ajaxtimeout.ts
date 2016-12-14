@@ -29,7 +29,6 @@ export class AjaxTimeoutInterceptor implements Interceptor {
     }
 
     error(err: any) {
-        console.error(err)
     }
 
     toString() {

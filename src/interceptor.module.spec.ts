@@ -10,29 +10,23 @@ import "rxjs/add/observable/empty"
 
 class CustomInterceptor implements Interceptor {
     before(request: string | Request): Observable<any> {
-        console.log(request)
         return Observable.empty()
     }
     after(response: Response) {
-        console.log(response)
 
     }
     error(error: any) {
-        console.log(error)
     }
 }
 
 class CustomInterceptor2 implements Interceptor {
     before(request: string | Request): Observable<any> {
-        console.log(request)
         return Observable.empty()
     }
     after(response: Response) {
-        console.log(response)
 
     }
     error(error: any) {
-        console.log(error)
     }
 }
 let fixture: ComponentFixture<AppComponent>;
