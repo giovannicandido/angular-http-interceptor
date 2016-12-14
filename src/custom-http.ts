@@ -9,6 +9,7 @@ import "rxjs/add/operator/concat"
 import "rxjs/add/operator/defaultIfEmpty"
 import "rxjs/add/observable/of"
 import "rxjs/add/operator/catch"
+import "rxjs/add/operator/skip"
 
 import { Interceptor } from "./interfaces"
 
@@ -46,7 +47,7 @@ export class CustomHttp extends Http {
     let subscribers = Observable.forkJoin(beforeObservables)
     let response = super.request(url, options)
 
-    let r = subscribers.concat(response)
+    let r = subscribers.concat(response).skip(1)
     return this.intercept(r)
   }
 

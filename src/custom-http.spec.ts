@@ -16,6 +16,7 @@ import "rxjs/add/observable/fromPromise"
 
 class CustomInterceptor implements Interceptor {
   lastRequest: Request
+  lastResponse: Response
   constructor(private delay: number) { }
   // TODO use Observable.of(request).delay(this.delay) bug: https://github.com/angular/angular/issues/10127
   before(request: Request): Observable<any> {
@@ -26,6 +27,7 @@ class CustomInterceptor implements Interceptor {
     }))
   }
   after(response: any) {
+    this.lastResponse = response
     return response
   }
   error(err: any) {
@@ -34,11 +36,12 @@ class CustomInterceptor implements Interceptor {
 }
 
 class EmptyInterceptor implements Interceptor {
+  lastResponse: any
   before(request: Request): Observable<any> {
-    console.log(request)
     return Observable.empty()
   }
   after(response: any) {
+    this.lastResponse = response
     return response
   }
   error(err: any) {
@@ -47,11 +50,12 @@ class EmptyInterceptor implements Interceptor {
 }
 
 class NullInterceptor implements Interceptor {
+  lastResponse: any
   before(request: Request): Observable<any> {
-    console.log(request)
     return null
   }
   after(response: any) {
+    this.lastResponse = response
     return response
   }
   error(err: any) {
@@ -397,6 +401,24 @@ describe('custom-http-delay-empty-interceptor', () => {
       expect(customInterceptor3.after).toHaveBeenCalled()
 
     })))
+
+  it('should pass the response in the after method', fakeAsync(
+    inject([XHRBackend, Http], (backend: MockBackend, http) => {
+      let body = JSON.stringify({ success: true })
+      let options = new ResponseOptions({
+        body: body
+      })
+      let response = new Response(options)
+      backend.connections.subscribe((connection: MockConnection) => {
+        connection.mockRespond(response)
+      })
+      http.get("fake").subscribe()
+      tick(30)
+      expect(customInterceptor.lastResponse).toEqual(response)
+      expect(customInterceptor2.lastResponse).toEqual(response)
+      expect(customInterceptor3.lastResponse).toEqual(response)
+    })))
+
 })
 
 @Component({
