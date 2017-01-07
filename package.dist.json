@@ -1,0 +1,32 @@
+{
+  "name": "angular-http-interceptor",
+  "version": "0.2.4",
+  "description": "A interceptor module to http calls",
+  "main": "bundles/angular-http-interceptor.umd.js",
+  "module": "index.js",
+  "typings": "index.d.ts",
+  "keywords": [
+    "angular",
+    "angular2",
+    "angular 2",
+    "interceptor",
+    "http"
+  ],
+  "author": "Giovanni Silva",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atende/ngular-http-interceptor.git"
+  },
+  "homepage": "https://github.com/atende/angular-http-interceptor#readme",
+  "bugs": {
+    "url": "https://github.com/atende/angular-http-interceptor/issues"
+  },
+  "peerDependencies": {
+    "@angular/core": ">=2.0.0 <=3.0.0",
+    "@angular/http": ">=2.0.0 <=3.0.0",
+    "reflect-metadata": "^0.1.8",
+    "rxjs": ">=5.0.0-beta.12 <= 6.0.0",
+    "zone.js": ">=0.6.26 < 2.0.0"
+  }
+}

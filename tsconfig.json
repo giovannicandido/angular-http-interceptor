@@ -1,25 +1,33 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": false,
+    "stripInternal": true,
     "noUnusedLocals": true,
     "noUnusedParameters": false,
-    "lib": ["es6", "dom"],
-    "module": "commonjs",
+    "lib": ["es2015", "dom"],
+    "module": "es2015",
     "moduleResolution": "node",
     "outDir": "dist/",
-    "sourceMap": false,
+    "sourceMap": true,
     "target": "es5",
     "typeRoots": [
       "node_modules/@types"
-    ]
+    ],
+    "paths": {
+      "@angular/core": ["node_modules/@angular/core"],
+      "@angular/http": ["node_modules/@angular/http"],
+      "rxjs/*": ["node_modules/rxjs/*"]
+    }
   },
   "compileOnSave": true,
   "exclude": [
     "node_modules/*",
     "dist/",
     "**/*-aot.ts"
-  ]
+  ],
+  "angularCompilerOptions": { "strictMetadataEmit": true }
 }

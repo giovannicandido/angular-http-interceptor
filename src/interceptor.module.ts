@@ -7,9 +7,7 @@ import { CustomHttp } from "./custom-http"
 @NgModule({
   providers: [
     {
-      provide: Http, useFactory: (httpInterceptors: Interceptor[], connectionBackend: XHRBackend, requestOptions: RequestOptions): Http => {
-        return new CustomHttp(httpInterceptors, connectionBackend, requestOptions)
-      }, deps: [Interceptor, XHRBackend, RequestOptions]
+      provide: Http, useFactory: httpFactory, deps: [Interceptor, XHRBackend, RequestOptions]
     },
     { provide: CustomHttp, useExisting: Http }
   ]
@@ -39,8 +37,9 @@ export class InterceptorModule {
       ])
     }
 
-    function httpFactory(httpInterceptors: Interceptor[], connectionBackend: XHRBackend, requestOptions: RequestOptions): Http {
-      return new CustomHttp(httpInterceptors, connectionBackend, requestOptions)
-    }
   }
+}
+
+export function httpFactory(httpInterceptors: Interceptor[], connectionBackend: XHRBackend, requestOptions: RequestOptions): Http {
+  return new CustomHttp(httpInterceptors, connectionBackend, requestOptions)
 }
