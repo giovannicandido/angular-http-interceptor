@@ -16,7 +16,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atende/ngular-http-interceptor.git"
+    "url": "https://github.com/atende/angular-http-interceptor.git"
   },
   "homepage": "https://github.com/atende/angular-http-interceptor#readme",
   "bugs": {
