@@ -21,7 +21,7 @@
     "package": "rollup -c",
     "minify": "uglifyjs dist/bundles/angular-http-interceptor.umd.js --screw-ie8 --compress --mangle --comments --output dist/bundles/angular-http-interceptor.umd.min.js",
     "keepVersion": "export version=`json -f package.json version`;json -I -f package.dist.json -e `echo \"this.version='$version'\"`",
-    "build": "npm run clean && npm run transpile && npm run package && npm run minify && npm run copyfiles"
+    "build": "npm run clean && npm run transpile && npm run package && npm run minify && npm run keepVersion && npm run copyfiles"
   },
   "repository": {
     "type": "git",
