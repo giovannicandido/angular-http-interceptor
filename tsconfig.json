@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "",
     "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -23,9 +23,8 @@
       "rxjs/*": ["node_modules/rxjs/*"]
     }
   },
-  "compileOnSave": true,
   "exclude": [
-    "node_modules/*",
+    "node_modules",
     "dist/",
     "**/*-aot.ts"
   ],
