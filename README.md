@@ -1,6 +1,6 @@
 # angular-http-interceptor
 
-![Build Status](https://travis-ci.org/atende/angular-http-interceptor.svg?branch=master)
+[![Build Status](https://travis-ci.org/atende/angular-http-interceptor.svg?branch=master)](https://travis-ci.org/atende/angular-http-interceptor)
 
 A Single point of extension for Http Interceptors in angular 2 projects, that keeps compatibility with Angular Http class.
 
