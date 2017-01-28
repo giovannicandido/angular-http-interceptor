@@ -2,15 +2,15 @@
 
 ![Build Status](https://travis-ci.org/atende/angular-http-interceptor.svg?branch=master)
 
-A Single point of extension for Http Interceptors in angular 2 projects
+A Single point of extension for Http Interceptors in angular 2 projects, that keeps compatibility with Angular Http class.
 
 The big advantage is that you can provide your Interceptors very easilly,
 and create standard interceptors for other projects.
 
-I plan to add a LoadingBarInterceptor, a DialogInterceptor, and a SessionExpirationInterceptor.
-All of then optional, you can write your own.
+There are some interceptors build in, that will be moved to the project [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa).
+This interceptors are disable by default.
 
-**Note**: The Http request will only execute after all observables in the before interceptors execute. 
+**Note**: The Http requests will only execute after __all observables__ in the before interceptors execute. 
 That is a requirement to do things like security token refresh
 
 This library is used by [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa) which provides other goodies
@@ -19,7 +19,7 @@ This library is used by [https://github.com/atende/angular-spa](https://github.c
 
 Examples in [https://github.com/atende/angular-spa-example](https://github.com/atende/angular-spa-example)
 
-There is two ways to provide interceptors, one override all previous interceptors the later concat then.
+There is two ways to provide interceptors, the first override all previous interceptors the later concat then.
 
 ## Without override
 
@@ -54,7 +54,7 @@ If you use `withInterceptors` it will override any interceptor created by other 
 The library [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa) provide a `RefreshTokenHttpInterceptor` 
 that is good to maintain, the `withInterceptors` will override that. You can still provide it again
 
-The method `InterceptorModule.withInterceptors()` accepts all kinds of providers (ValueProviders, FactoryProviders...) and plain classes. Exemples:
+The method `InterceptorModule.withInterceptors()` accepts all kinds of providers (ValueProviders, FactoryProviders...) and plain classes. Examples:
 
     InterceptorModule.withInterceptors([InterceptorClass])
     InterceptorModule.withInterceptors([{ provide: Interceptor, useClass: InterceptorClass }])
@@ -132,10 +132,11 @@ Now every request made with the official @angular/http Http class is intercepted
 
 I create a subclass of Http client and override it with a custom provider.
 
-The CustomHttp class, create 3 EventEmitter's and emit events for **requestStarted**,
-**requestEnded** and **requestError**. 
+The CustomHttp class, do the job and call the interceptors.
 
-All interceptors methods are called asynchronously, there is NO guarentee of order of course.
+All interceptors methods are called asynchronously, there is NO guarentee of order of course,
+but __after method will execute only after the before method finishes__. This is a Important
+difference between other interceptor libraries!
 
 # Dialog Interceptor
 
@@ -227,7 +228,7 @@ I recomend that you see the [source code](./src/interceptor/dialog.ts) for Dialo
 
 # AjaxTimeout Interceptor
 
-This interceptor cal a login service if the response is 901. This is a custom response status for timeout expiration.
+This interceptor call a login service if the response is 901. This is a custom response status for timeout expiration.
 
 ## Usage
 
