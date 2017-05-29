@@ -11,20 +11,26 @@ var tscompilerOptions = {
 module.exports = {
     devtool: 'inline-source-map',
     module: {
-        preLoaders: [
-            { exclude: /node_modules/, loader: 'tslint', test: /\.tsx?$/ }
-        ],
-        loaders: [
-            { exclude: '/node_modules', loader: 'raw', test: /\.(css|html)$/ },
-            { exclude: '/node_modules', loader: 'ts-loader?' + JSON.stringify(tscompilerOptions), test: /\.tsx?$/ }
-        ]
+        rules: [
+       { 
+           test: /\.(css|html)$/,
+           exclude: '/node_modules', 
+           use: {
+               loader: 'raw'
+            } 
+        },{ 
+            test: /\.tsx?$/,            
+            exclude: '/node_modules', 
+            use: {
+                loader: 'ts-loader',
+                options: tscompilerOptions
+            }
+        }
+    ]
     },
     resolve: {
-        extensions: ['', '.js', '.ts', '.tsx'],
-        modulesDirectories: ['node_modules'],
-        root: path.resolve('.', 'src')
-    },
-    tslint: {
-        emitErrors: true
+        modules: [path.resolve(__dirname, "src" ), "node_modules"],
+        extensions: ['.js', '.ts', '.tsx']
     }
+   
 };

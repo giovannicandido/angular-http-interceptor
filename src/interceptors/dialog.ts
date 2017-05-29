@@ -12,7 +12,7 @@ declare var UIkit: any
 
 /**
  * Default implementation use UIKit Notifications and Dialog
- * If you use the default you must add UIKit as dependency of your project, 
+ * If you use the default you must add UIKit as dependency of your project,
  * and setup it
  */
 @Injectable()

@@ -8,8 +8,8 @@ import { Interceptor } from "../interfaces"
 
 @Injectable()
 export abstract class LoginService {
-    abstract login();
-    abstract loginExpired();
+    abstract login()
+    abstract loginExpired()
 }
 
 @Injectable()

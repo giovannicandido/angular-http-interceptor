@@ -6,5 +6,5 @@ import { Observable } from "rxjs/Observable"
 export abstract class Interceptor {
     abstract before(request: Request): Observable<any>;
     abstract after(response: Response): void;
-    abstract error(err: Response): void;
+    abstract error(error: Response): void;
 }
