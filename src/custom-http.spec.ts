@@ -214,10 +214,9 @@ describe('custom-http', () => {
     it('should pass requestOptions from request to interceptor', fakeAsync(
       inject([Http], (http: CustomHttp) => {
         // With a request
-        let url = 'https://www.google.com.br'
-        let request = new RequestOptions({ url: url })
-        request.headers = new Headers()
-        http.request(url)
+        
+        let request = new Request({url: 'https://www.google.com.br', headers: new Headers({"MyHeader": "Value"})});
+        http.request(request)
         tick(100)
         expect(customInterceptor.before).toHaveBeenCalledWith(request)
       })))

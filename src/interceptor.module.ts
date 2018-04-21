@@ -1,4 +1,4 @@
-import { NgModule, Provider, ModuleWithProviders, OpaqueToken, Type } from '@angular/core'
+import { NgModule, Provider, ModuleWithProviders, InjectionToken, Type } from '@angular/core'
 import { Http, XHRBackend, RequestOptions } from '@angular/http'
 
 import { Interceptor } from './interfaces'
@@ -16,7 +16,7 @@ export class InterceptorModule {
   // TODO type Provider is strange here, since provide property is alson the OpaqueToken('Interceptor')
   static withInterceptors(interceptorTypes: Provider[]): ModuleWithProviders {
 
-    let opaqueToken: OpaqueToken = new OpaqueToken('Interceptor')
+    let opaqueToken = new InjectionToken('Interceptor')
 
     let interceptorProviders: Provider[] = interceptorTypes.map(type => {
       if (type instanceof Type) {
