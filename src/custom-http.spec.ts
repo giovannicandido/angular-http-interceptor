@@ -83,8 +83,8 @@ describe('custom-http', () => {
       imports: [
         HttpModule,
         InterceptorModule.withInterceptors([
-          { provide: Interceptor, useValue: customInterceptor },
-          { provide: Interceptor, useValue: customInterceptor2 }
+          { provide: Interceptor, useValue: customInterceptor, multi: true },
+          { provide: Interceptor, useValue: customInterceptor2, multi: true }
         ])
       ],
       declarations: [AppComponent],
@@ -259,9 +259,9 @@ describe('custom-http-delay-null-interceptor', () => {
       imports: [
         HttpModule,
         InterceptorModule.withInterceptors([
-          { provide: Interceptor, useValue: customInterceptor },
-          { provide: Interceptor, useValue: customInterceptor2 },
-          { provide: Interceptor, useValue: customInterceptor3 }
+          { provide: Interceptor, useValue: customInterceptor, multi: true },
+          { provide: Interceptor, useValue: customInterceptor2, multi: true },
+          { provide: Interceptor, useValue: customInterceptor3, multi: true }
         ])
       ],
       declarations: [AppComponent],
@@ -342,9 +342,9 @@ describe('custom-http-delay-empty-interceptor', () => {
       imports: [
         HttpModule,
         InterceptorModule.withInterceptors([
-          { provide: Interceptor, useValue: customInterceptor },
-          { provide: Interceptor, useValue: customInterceptor2 },
-          { provide: Interceptor, useValue: customInterceptor3 }
+          { provide: Interceptor, useValue: customInterceptor, multi: true },
+          { provide: Interceptor, useValue: customInterceptor2, multi: true },
+          { provide: Interceptor, useValue: customInterceptor3, multi: true }
         ])
       ],
       declarations: [AppComponent],

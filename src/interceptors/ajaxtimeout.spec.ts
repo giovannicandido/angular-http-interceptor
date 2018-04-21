@@ -5,6 +5,7 @@ import { MockBackend, MockConnection } from "@angular/http/testing"
 
 import { LoginService, AjaxTimeoutInterceptor } from './ajaxtimeout'
 import { InterceptorModule } from '../interceptor.module'
+import { Interceptor } from '../interfaces';
 
 let requestOptions = new RequestOptions()
 
@@ -24,7 +25,13 @@ describe('ajaxtimeout-service', () => {
         TestBed.configureTestingModule({
             imports: [
                 HttpModule,
-                InterceptorModule.withInterceptors([AjaxTimeoutInterceptor])
+                InterceptorModule.withInterceptors([
+                    {
+                        provide: Interceptor,
+                        useClass: AjaxTimeoutInterceptor,
+                        multi: true
+                    }
+                ])
             ],
             declarations: [AppComponent],
             providers: [

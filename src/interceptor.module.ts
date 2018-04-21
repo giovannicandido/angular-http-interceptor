@@ -1,4 +1,4 @@
-import { NgModule, Provider, ModuleWithProviders, InjectionToken } from '@angular/core'
+import { NgModule, Provider, ModuleWithProviders } from '@angular/core'
 import { Http, XHRBackend, RequestOptions } from '@angular/http'
 
 import { Interceptor } from './interfaces'
@@ -15,13 +15,10 @@ import { CustomHttp } from "./custom-http"
 export class InterceptorModule {
   // TODO type Provider is strange here, since provide property is alson the OpaqueToken('Interceptor')
   static withInterceptors(interceptorTypes: Provider[]): ModuleWithProviders {
-
-    let opaqueToken = new InjectionToken('Interceptor')
-
     return {
       ngModule: InterceptorModule,
       providers: [
-        { provide: Http, useFactory: httpFactory, deps: [opaqueToken, XHRBackend, RequestOptions] },
+        { provide: Http, useFactory: httpFactory, deps: [Interceptor, XHRBackend, RequestOptions] },
         { provide: CustomHttp, useExisting: Http },
         interceptorTypes
       ]
