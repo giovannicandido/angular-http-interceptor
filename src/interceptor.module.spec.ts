@@ -36,7 +36,11 @@ describe('interceptor-module', function () {
         TestBed.configureTestingModule({
             imports: [
                 HttpModule,
-                InterceptorModule.withInterceptors([CustomInterceptor])
+                {
+                    provide: Interceptor,
+                    userClass: CustomInterceptor,
+                    multi: true
+                }
             ],
             declarations: [AppComponent]
         })

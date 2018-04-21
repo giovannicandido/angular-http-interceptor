@@ -51,15 +51,15 @@ Override previous:
     })
 If you use `withInterceptors` it will override any interceptor created by other module or library. 
 
-The library [https://github.com/giovannicandido/angular-spa](https://github.com/giovannicandido/angular-spa) provide a `RefreshTokenHttpInterceptor` 
-that is good to maintain, the `withInterceptors` will override that. You can still provide it again
+For example, the library [https://github.com/giovannicandido/angular-spa](https://github.com/giovannicandido/angular-spa) provide a `RefreshTokenHttpInterceptor` 
+that is good to maintain, the `withInterceptors` will override that. You can still provide it again.
 
 The method `InterceptorModule.withInterceptors()` accepts all kinds of providers (ValueProviders, FactoryProviders...) and plain classes. Examples:
 
     InterceptorModule.withInterceptors([InterceptorClass])
-    InterceptorModule.withInterceptors([{ provide: Interceptor, useClass: InterceptorClass }])
-    InterceptorModule.withInterceptors([{ provide: Interceptor, useExisting: InterceptorClass }])
-    InterceptorModule.withInterceptors([{ provide: Interceptor, useValue: interceptorObject }])
+    InterceptorModule.withInterceptors([{ provide: Interceptor, useClass: InterceptorClass, multi: true }])
+    InterceptorModule.withInterceptors([{ provide: Interceptor, useExisting: InterceptorClass, multi: true }])
+    InterceptorModule.withInterceptors([{ provide: Interceptor, useValue: interceptorObject, multi: true }])
 
 This give the flexibility you need. The `provide` part is always overrided to a `OpaqueToken`, is irrelevant what you put here, 
 but the typescript compiler will complain if you omit.

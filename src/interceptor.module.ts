@@ -1,4 +1,4 @@
-import { NgModule, Provider, ModuleWithProviders, InjectionToken, Type } from '@angular/core'
+import { NgModule, Provider, ModuleWithProviders, InjectionToken } from '@angular/core'
 import { Http, XHRBackend, RequestOptions } from '@angular/http'
 
 import { Interceptor } from './interfaces'
@@ -18,23 +18,13 @@ export class InterceptorModule {
 
     let opaqueToken = new InjectionToken('Interceptor')
 
-    let interceptorProviders: Provider[] = interceptorTypes.map(type => {
-      if (type instanceof Type) {
-        return { provide: opaqueToken, useClass: type, multi: true }
-      } else {
-        let typeAny = type as any
-        typeAny.provide = opaqueToken
-        typeAny.multi = true
-        return typeAny
-      }
-    })
-
     return {
       ngModule: InterceptorModule,
-      providers: interceptorProviders.concat([
+      providers: [
         { provide: Http, useFactory: httpFactory, deps: [opaqueToken, XHRBackend, RequestOptions] },
-        { provide: CustomHttp, useExisting: Http }
-      ])
+        { provide: CustomHttp, useExisting: Http },
+        interceptorTypes
+      ]
     }
 
   }
