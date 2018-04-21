@@ -1,23 +1,23 @@
 # angular-http-interceptor
 
-[![Build Status](https://travis-ci.org/atende/angular-http-interceptor.svg?branch=master)](https://travis-ci.org/atende/angular-http-interceptor)
+[![Build Status](https://travis-ci.org/giovannicandido/angular-http-interceptor.svg?branch=master)](https://travis-ci.org/giovannicandido/angular-http-interceptor)
 
 A Single point of extension for Http Interceptors in angular 2 projects, that keeps compatibility with Angular Http class.
 
 The big advantage is that you can provide your Interceptors very easilly,
 and create standard interceptors for other projects.
 
-There are some interceptors build in, that will be moved to the project [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa).
+There are some interceptors build in, that will be moved to the project [https://github.com/giovannicandido/angular-spa](https://github.com/giovannicandido/angular-spa).
 This interceptors are disable by default.
 
 **Note**: The Http requests will only execute after __all observables__ in the before interceptors execute. 
 That is a requirement to do things like security token refresh
 
-This library is used by [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa) which provides other goodies
+This library is used by [https://github.com/giovannicandido/angular-spa](https://github.com/giovannicandido/angular-spa) which provides other goodies
 
 # How to use
 
-Examples in [https://github.com/atende/angular-spa-example](https://github.com/atende/angular-spa-example)
+Examples in [https://github.com/giovannicandido/angular-spa-example](https://github.com/giovannicandido/angular-spa-example)
 
 There is two ways to provide interceptors, the first override all previous interceptors the later concat then.
 
@@ -51,7 +51,7 @@ Override previous:
     })
 If you use `withInterceptors` it will override any interceptor created by other module or library. 
 
-The library [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa) provide a `RefreshTokenHttpInterceptor` 
+The library [https://github.com/giovannicandido/angular-spa](https://github.com/giovannicandido/angular-spa) provide a `RefreshTokenHttpInterceptor` 
 that is good to maintain, the `withInterceptors` will override that. You can still provide it again
 
 The method `InterceptorModule.withInterceptors()` accepts all kinds of providers (ValueProviders, FactoryProviders...) and plain classes. Examples:
