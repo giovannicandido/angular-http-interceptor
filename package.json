@@ -24,19 +24,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/atende/angular-http-interceptor.git"
+    "url": "git+https://github.com/giovannicandido/angular-http-interceptor.git"
   },
   "keywords": [
     "angular2",
+    "angular",
     "interceptor",
     "http"
   ],
   "author": "Giovanni Silva",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/atende/angular-http-interceptor/issues"
+    "url": "https://github.com/giovannicandido/angular-http-interceptor/issues"
   },
-  "homepage": "https://github.com/atende/angular-http-interceptor#readme",
+  "homepage": "https://github.com/giovannicandido/angular-http-interceptor#readme",
   "dependencies": {
     "@angular/common": "^5.2.10",
     "@angular/core": ">=4.0.0 <6.0.0",
