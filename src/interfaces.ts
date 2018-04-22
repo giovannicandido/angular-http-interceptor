@@ -1,10 +1,11 @@
 import { Injectable } from "@angular/core"
-import { Request, Response } from "@angular/http"
+import { Response } from "@angular/http"
 import { Observable } from "rxjs/Observable"
+import { RequestArgs } from "@angular/http/src/interfaces";
 
 @Injectable()
 export abstract class Interceptor {
-    abstract before(request: Request): Observable<any>;
+    abstract before(request: RequestArgs): Observable<any>;
     abstract after(response: Response): void;
     abstract error(error: Response): void;
 }

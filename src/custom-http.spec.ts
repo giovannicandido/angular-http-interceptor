@@ -7,7 +7,7 @@ import {
 import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing"
 import { MockBackend, MockConnection } from "@angular/http/testing"
 
-import { CustomHttp, Interceptor, InterceptorModule } from "./index"
+import { CustomHttp, Interceptor, InterceptorModule, INTERCEPTORS } from "./index"
 import { Observable } from "rxjs/Observable"
 
 import "rxjs/add/operator/catch"
@@ -83,8 +83,8 @@ describe('custom-http', () => {
       imports: [
         HttpModule,
         InterceptorModule.withInterceptors([
-          { provide: Interceptor, useValue: customInterceptor, multi: true },
-          { provide: Interceptor, useValue: customInterceptor2, multi: true }
+          { provide: INTERCEPTORS, useValue: customInterceptor, multi: true },
+          { provide: INTERCEPTORS, useValue: customInterceptor2, multi: true }
         ])
       ],
       declarations: [AppComponent],
@@ -259,9 +259,9 @@ describe('custom-http-delay-null-interceptor', () => {
       imports: [
         HttpModule,
         InterceptorModule.withInterceptors([
-          { provide: Interceptor, useValue: customInterceptor, multi: true },
-          { provide: Interceptor, useValue: customInterceptor2, multi: true },
-          { provide: Interceptor, useValue: customInterceptor3, multi: true }
+          { provide: INTERCEPTORS, useValue: customInterceptor, multi: true },
+          { provide: INTERCEPTORS, useValue: customInterceptor2, multi: true },
+          { provide: INTERCEPTORS, useValue: customInterceptor3, multi: true }
         ])
       ],
       declarations: [AppComponent],
@@ -342,9 +342,9 @@ describe('custom-http-delay-empty-interceptor', () => {
       imports: [
         HttpModule,
         InterceptorModule.withInterceptors([
-          { provide: Interceptor, useValue: customInterceptor, multi: true },
-          { provide: Interceptor, useValue: customInterceptor2, multi: true },
-          { provide: Interceptor, useValue: customInterceptor3, multi: true }
+          { provide: INTERCEPTORS, useValue: customInterceptor, multi: true },
+          { provide: INTERCEPTORS, useValue: customInterceptor2, multi: true },
+          { provide: INTERCEPTORS, useValue: customInterceptor3, multi: true }
         ])
       ],
       declarations: [AppComponent],

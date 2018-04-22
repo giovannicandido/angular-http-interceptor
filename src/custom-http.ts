@@ -12,32 +12,32 @@ import "rxjs/add/operator/catch"
 import "rxjs/add/operator/skip"
 
 import { Interceptor } from "./interfaces"
+import { RequestArgs } from '@angular/http/src/interfaces';
 
 @Injectable()
 export class CustomHttp extends Http {
-  constructor( @Inject(Interceptor) private interceptors: Interceptor[], backend: XHRBackend, defaultOptions: RequestOptions) {
+  public interceptors: Interceptor[]
+  constructor( @Inject(Interceptor) injectedInterceptors: Interceptor | Interceptor[], backend: XHRBackend, defaultOptions: RequestOptions) {
     super(backend, defaultOptions)
+
+    // Make sure interceptors is array
+    if(injectedInterceptors instanceof Array) {
+      this.interceptors = injectedInterceptors
+    }else {
+      this.interceptors = [injectedInterceptors]
+    }
   }
 
   request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     /**
      * Make sure interceptor is called with a request not a url
      */
-    let beforeCallOption
-    if (typeof url === 'string' && options) {
-      options.url = url
-      beforeCallOption = options
-    } else if (typeof url === 'string') {
-      let options = new RequestOptions({ url: url })
-      options.headers = new Headers()
-      beforeCallOption = options
-    } else {
-      beforeCallOption = url
-    }
-
-    // If one method is empty do not stop application
+    const request = this.mapToRequest(url, options)
+    
+    // Transform the observers for before actions, if the user do not override the method
+    // it will fall back to a empty observer
     let beforeObservables = this.interceptors.map(_ => {
-      let method = _.before(beforeCallOption)
+      let method = _.before(request)
       if (method === null || method === undefined) {
         return Observable.empty().defaultIfEmpty("EMPTY_BEFORE")
       } else {
@@ -45,6 +45,7 @@ export class CustomHttp extends Http {
       }
     })
 
+    // Create subscribes ensure before will execute in order
     let subscribers = Observable.forkJoin(beforeObservables)
     let response: Observable<Response> = super.request(url, options)
 
@@ -52,6 +53,10 @@ export class CustomHttp extends Http {
     return this.intercept(r)
   }
 
+  /**
+   * Unrap the observer with action for after and error for all interceptors
+   * @param observable Response
+   */
   intercept(observable: Observable<any>): Observable<Response> {
     return observable.do(res => {
       this.emitAfter(res)
@@ -61,15 +66,42 @@ export class CustomHttp extends Http {
     })
   }
 
+  /**
+   * Call all after interceptors
+   * @param res response
+   */
   private emitAfter(res: any) {
     for (let interceptor of this.interceptors) {
       interceptor.after(res)
     }
   }
-
+  
+  /**
+   * Call all error method interceptors
+   * @param error response
+   */
   private emitError(error: any) {
     for (let interceptor of this.interceptors) {
       interceptor.error(error)
     }
+  }
+  /**
+   * Transform a combination of url and options in a RequestArgs with the Url
+   * @param url object request
+   * @param options Options
+   */
+  private mapToRequest(url: string | Request, options?: RequestOptionsArgs): RequestArgs {
+    let beforeCallOption: RequestArgs
+    if (typeof url === 'string' && options) {
+      options.url = url
+      beforeCallOption = <RequestArgs> options
+    } else if (typeof url === 'string') {
+      let options = new RequestOptions({ url: url })
+      options.headers = new Headers()
+      beforeCallOption = options
+    } else {
+      beforeCallOption = url
+    }
+    return beforeCallOption
   }
 }
