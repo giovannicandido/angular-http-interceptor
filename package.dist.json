@@ -16,11 +16,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atende/angular-http-interceptor.git"
+    "url": "https://github.com/giovanni/angular-http-interceptor.git"
   },
-  "homepage": "https://github.com/atende/angular-http-interceptor#readme",
+  "homepage": "https://github.com/giovanni/angular-http-interceptor#readme",
   "bugs": {
-    "url": "https://github.com/atende/angular-http-interceptor/issues"
+    "url": "https://github.com/giovanni/angular-http-interceptor/issues"
   },
   "peerDependencies": {
     "@angular/core": ">=4.0.0 <6.0.0",

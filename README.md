@@ -14,7 +14,7 @@ This library is used by [https://github.com/giovannicandido/angular-spa](https:/
 
 Examples:
 
-[https://github.com/giovannicandido/angular-http-interceptor-examples](https://github.com/giovannicandido/angular-http-interceptor-examples)
+[https://github.com/giovannicandido/angular-http-interceptor-example](https://github.com/giovannicandido/angular-http-interceptor-example)
 
 
 [https://github.com/giovannicandido/angular-spa-example](https://github.com/giovannicandido/angular-spa-example)
