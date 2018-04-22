@@ -12,7 +12,12 @@ That is a requirement to do things like security token refresh
 
 This library is used by [https://github.com/giovannicandido/angular-spa](https://github.com/giovannicandido/angular-spa) which provides generic intercetors, security sso, and other goodies
 
-Examples in [https://github.com/giovannicandido/angular-spa-example](https://github.com/giovannicandido/angular-spa-example)
+Examples:
+
+[https://github.com/giovannicandido/angular-http-interceptor-examples](https://github.com/giovannicandido/angular-http-interceptor-examples)
+
+
+[https://github.com/giovannicandido/angular-spa-example](https://github.com/giovannicandido/angular-spa-example)
 
 # How to use
 
@@ -80,9 +85,17 @@ that is good to maintain, the `withInterceptors` will override that. You can sti
 
 The method `InterceptorModule.withInterceptors()` accepts all kinds of providers (ValueProviders, FactoryProviders...) except plain classes. Examples:
 
-    InterceptorModule.withInterceptors([{ provide: INTERCEPTORS, useClass:             MyInterceptorClass, multi: true }])
-    InterceptorModule.withInterceptors([{ provide: INTERCEPTORS, useExisting: InterceptorClass, multi: true }])
-    InterceptorModule.withInterceptors([{ provide: INTERCEPTORS, useValue: interceptorObject, multi: true }])
+```typescript
+    InterceptorModule.withInterceptors([
+            { provide: INTERCEPTORS, useClass: MyInterceptorClass, multi: true }
+        ])
+    InterceptorModule.withInterceptors([
+            { provide: INTERCEPTORS, useExisting: InterceptorClass, multi: true }
+        ])
+    InterceptorModule.withInterceptors([
+            { provide: INTERCEPTORS, useValue: interceptorObject, multi: true }
+        ])
+```
 
 
 Unfortunatelly This will not work:
@@ -121,6 +134,9 @@ More complete examples:
      * so, result in the contrary, i.e, HttpModule overriding InterceptorModule.
      */
     @NgModule({
+        declarations: [
+            AppComponent
+        ],
         imports: [ 
             HttpModule, // This must be first
             InterceptorModule.withInterceptors([
