@@ -35,6 +35,7 @@ export class CustomHttp extends Http {
       beforeCallOption = url
     }
 
+    // If one method is empty do not stop application
     let beforeObservables = this.interceptors.map(_ => {
       let method = _.before(beforeCallOption)
       if (method === null || method === undefined) {
@@ -45,13 +46,13 @@ export class CustomHttp extends Http {
     })
 
     let subscribers = Observable.forkJoin(beforeObservables)
-    let response = super.request(url, options)
+    let response: Observable<Response> = super.request(url, options)
 
     let r = subscribers.concat(response).skip(1)
     return this.intercept(r)
   }
 
-  intercept(observable: Observable<Response>): Observable<Response> {
+  intercept(observable: Observable<any>): Observable<Response> {
     return observable.do(res => {
       this.emitAfter(res)
     }).catch((err: Response) => {

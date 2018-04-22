@@ -10,6 +10,7 @@ import { Observable } from "rxjs/Observable"
 
 import "rxjs/add/operator/catch"
 import "rxjs/add/observable/of"
+import { Interceptor } from '../interfaces';
 
 let requestOptions = new RequestOptions()
 describe('dialog-service', () => {
@@ -21,7 +22,13 @@ describe('dialog-service', () => {
         TestBed.configureTestingModule({
             imports: [
                 HttpModule,
-                InterceptorModule.withInterceptors([DialogInterceptor])
+                InterceptorModule.withInterceptors([
+                    {   
+                        provide: Interceptor,
+                        useClass: DialogInterceptor,
+                        multi: true
+                    }
+                ])
             ],
             declarations: [AppComponent],
             providers: [

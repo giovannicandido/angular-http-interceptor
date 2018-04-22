@@ -1,6 +1,6 @@
 {
   "name": "angular-http-interceptor",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A interceptor module to http calls",
   "main": "bundles/angular-http-interceptor.umd.js",
   "module": "index.js",
@@ -23,9 +23,9 @@
     "url": "https://github.com/atende/angular-http-interceptor/issues"
   },
   "peerDependencies": {
-    "@angular/core": ">=2.0.0 <=4.0.0",
-    "@angular/http": ">=2.0.0 <=4.0.0",
-    "rxjs": ">=5.0.0-beta.12 <= 6.0.0",
+    "@angular/core": ">=4.0.0 <6.0.0",
+    "@angular/http": ">=4.0.0 <6.0.0",
+    "rxjs": ">=5.0.0 < 6.0.0",
     "zone.js": ">=0.6.26 < 2.0.0"
   }
 }

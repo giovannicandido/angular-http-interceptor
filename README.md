@@ -1,28 +1,26 @@
-# angular-http-interceptor
+# Angular Http Interceptor
 
-[![Build Status](https://travis-ci.org/atende/angular-http-interceptor.svg?branch=master)](https://travis-ci.org/atende/angular-http-interceptor)
+[![Build Status](https://travis-ci.org/giovannicandido/angular-http-interceptor.svg?branch=master)](https://travis-ci.org/giovannicandido/angular-http-interceptor)
 
-A Single point of extension for Http Interceptors in angular 2 projects, that keeps compatibility with Angular Http class.
+A Single point of extension for Http Interceptors in Angular projects, that keeps compatibility with Angular Http class.
 
 The big advantage is that you can provide your Interceptors very easilly,
 and create standard interceptors for other projects.
 
-There are some interceptors build in, that will be moved to the project [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa).
-This interceptors are disable by default.
-
 **Note**: The Http requests will only execute after __all observables__ in the before interceptors execute. 
 That is a requirement to do things like security token refresh
 
-This library is used by [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa) which provides other goodies
+This library is used by [https://github.com/giovannicandido/angular-spa](https://github.com/giovannicandido/angular-spa) which provides generic intercetors, security sso, and other goodies
+
+Examples in [https://github.com/giovannicandido/angular-spa-example](https://github.com/giovannicandido/angular-spa-example)
 
 # How to use
-
-Examples in [https://github.com/atende/angular-spa-example](https://github.com/atende/angular-spa-example)
 
 There is two ways to provide interceptors, the first override all previous interceptors the later concat then.
 
 ## Without override
 
+```typescript
     @NgModule({
         imports: [
             HttpModule,
@@ -40,32 +38,44 @@ There is two ways to provide interceptors, the first override all previous inter
             }
         ]
     })
+```
 
 Override previous:
 
+```typescript
     @NgModule({
         imports: [
             HttpModule,
-            InterceptorModule.withInterceptors([CustomInterceptor, CustomInterceptor2])
+            InterceptorModule.withInterceptors([
+                    {
+                        provide: Interceptor,
+                        useClass: CustomInterceptor,
+                        multi: true
+                    },{
+                        provide: Interceptor,
+                        useClass: CustomInterceptor2,
+                        multi: true
+                    }
+                ])
         ]
     })
-If you use `withInterceptors` it will override any interceptor created by other module or library. 
+```
 
-The library [https://github.com/atende/angular-spa](https://github.com/atende/angular-spa) provide a `RefreshTokenHttpInterceptor` 
-that is good to maintain, the `withInterceptors` will override that. You can still provide it again
+If you use `withInterceptors` it will override any interceptor created by other module or library. **Don't forget multi: true** or it will inject only one Interceptor
 
-The method `InterceptorModule.withInterceptors()` accepts all kinds of providers (ValueProviders, FactoryProviders...) and plain classes. Examples:
+For example, the library [https://github.com/giovannicandido/angular-spa](https://github.com/giovannicandido/angular-spa) provide a `RefreshTokenHttpInterceptor` 
+that is good to maintain, the `withInterceptors` will override that. You can still provide it again.
 
-    InterceptorModule.withInterceptors([InterceptorClass])
-    InterceptorModule.withInterceptors([{ provide: Interceptor, useClass: InterceptorClass }])
-    InterceptorModule.withInterceptors([{ provide: Interceptor, useExisting: InterceptorClass }])
-    InterceptorModule.withInterceptors([{ provide: Interceptor, useValue: interceptorObject }])
+The method `InterceptorModule.withInterceptors()` accepts all kinds of providers (ValueProviders, FactoryProviders...) except plain classes. Examples:
 
-This give the flexibility you need. The `provide` part is always overrided to a `OpaqueToken`, is irrelevant what you put here, 
-but the typescript compiler will complain if you omit.
+    InterceptorModule.withInterceptors([{ provide: Interceptor, useClass: InterceptorClass, multi: true }])
+    InterceptorModule.withInterceptors([{ provide: Interceptor, useExisting: InterceptorClass, multi: true }])
+    InterceptorModule.withInterceptors([{ provide: Interceptor, useValue: interceptorObject, multi: true }])
+
 
 More complete examples:
 
+```typescript
     import { NgModule } from "@angular/core"
     import { HttpModule } from "@angular/http"
     import { InterceptorModule, Interceptor } from "angular-http-interceptor" 
@@ -94,7 +104,11 @@ More complete examples:
         imports: [ 
             HttpModule,
             InterceptorModule.withInterceptors([
-                MyInterceptor
+                {
+                    provide: Interceptor,
+                    useClass: MyInterceptor,
+                    multi: true
+                }
             ]),
          ]
     })
@@ -124,7 +138,7 @@ More complete examples:
             });
         }
     }
-
+```
 
 Now every request made with the official @angular/http Http class is intercepted
 
@@ -157,6 +171,8 @@ The default notification use [UIkit](http://getuikit.com) to show messages. You 
 
 Import DialogInterceptor and DialogService and create a provider for it
 
+```typescript
+    import {InterceptorModule, Interceptor} from "angular-http-interceptor"
     import { DialogInterceptor, DialogService } from "angular-http-interceptor/interceptors/dialog"
 
     @NgModule({
@@ -167,11 +183,23 @@ Import DialogInterceptor and DialogService and create a provider for it
             BrowserModule,
             FormsModule,
             HttpModule,
-            InterceptorModule.withInterceptors([MyInterceptor, DialogInterceptor])
+            InterceptorModule
         ],
+        providers: [
+            {
+                provide: Interceptor,
+                useClass: MyInterceptor,
+                multi: true
+            },{
+                provide: Interceptor,
+                useClass: DialogInterceptor,
+                multi: true
+            }
+        ]
         bootstrap: [AppComponent]
         })
         export class AppModule { }
+```
 
 Add UIkit to your project, if you use angular-cli you need to update **angular-cli.json** file
 
@@ -193,6 +221,8 @@ Add UIkit to your project, if you use angular-cli you need to update **angular-c
 
 Just provide a custom implementantion for DialogService
 
+```typescript
+    import {InterceptorModule, Interceptor} from "angular-http-interceptor"
     import { DialogInterceptor, DialogService } from "angular-http-interceptor/interceptors/dialog"
 
     class MyDialogService implements DialogService {
@@ -212,17 +242,26 @@ Just provide a custom implementantion for DialogService
              BrowserModule,
              FormsModule,
              HttpModule,
-             InterceptorModule.withInterceptors([MyInterceptor, DialogInterceptor])
+             InterceptorModule
          ],
          providers: [
              {
                  provide: DialogService,
                  useClass: MyDialogService
+             }, {
+                 provide: Interceptor,
+                 useClass: MyInterceptor,
+                 multi: true
+             }, {
+                 provide: Interceptor,
+                 useClass: DialogInterceptor,
+                 multi: true
              }
          ],
          bootstrap: [AppComponent]
          })
          export class AppModule { }
+```
 
 I recomend that you see the [source code](./src/interceptor/dialog.ts) for DialogInterceptor to know where it is trigged
 
@@ -231,7 +270,8 @@ I recomend that you see the [source code](./src/interceptor/dialog.ts) for Dialo
 This interceptor call a login service if the response is 901. This is a custom response status for timeout expiration.
 
 ## Usage
-
+```typescript
+    import {InterceptorModule, Interceptor} from "angular-http-interceptor"
     import { AjaxTimeoutInterceptor, LoginService } from "angular-http-interceptor/interceptors/ajaxtimeout";
 
     class MyLoginService implements LoginService {
@@ -255,15 +295,19 @@ This interceptor call a login service if the response is 901. This is a custom r
              BrowserModule,
              FormsModule,
              HttpModule,
-             InterceptorModule.withInterceptors([MyLoginService])
+             InterceptorModule
          ],
          providers: [
             {
                  provide: LoginService,
                  useClass: MyLoginService
+            }, {
+                provide: Interceptor,
+                useClass: AjaxTimeoutInterceptor,
+                multi: true
             }
          ],
          bootstrap: [AppComponent]
          })
          export class AppModule { }
-
+```
