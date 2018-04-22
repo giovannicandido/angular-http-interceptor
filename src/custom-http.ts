@@ -12,18 +12,19 @@ import "rxjs/add/operator/catch"
 import "rxjs/add/operator/skip"
 
 import { Interceptor } from "./interfaces"
-import { RequestArgs } from '@angular/http/src/interfaces';
+import { RequestArgs } from '@angular/http/src/interfaces'
 
 @Injectable()
 export class CustomHttp extends Http {
   public interceptors: Interceptor[]
-  constructor( @Inject(Interceptor) injectedInterceptors: Interceptor | Interceptor[], backend: XHRBackend, defaultOptions: RequestOptions) {
+  constructor( @Inject(Interceptor) injectedInterceptors: Interceptor | Interceptor[],
+    backend: XHRBackend, defaultOptions: RequestOptions) {
     super(backend, defaultOptions)
 
     // Make sure interceptors is array
-    if(injectedInterceptors instanceof Array) {
+    if (injectedInterceptors instanceof Array) {
       this.interceptors = injectedInterceptors
-    }else {
+    } else {
       this.interceptors = [injectedInterceptors]
     }
   }
@@ -33,7 +34,7 @@ export class CustomHttp extends Http {
      * Make sure interceptor is called with a request not a url
      */
     const request = this.mapToRequest(url, options)
-    
+
     // Transform the observers for before actions, if the user do not override the method
     // it will fall back to a empty observer
     let beforeObservables = this.interceptors.map(_ => {
@@ -75,7 +76,7 @@ export class CustomHttp extends Http {
       interceptor.after(res)
     }
   }
-  
+
   /**
    * Call all error method interceptors
    * @param error response
@@ -96,9 +97,9 @@ export class CustomHttp extends Http {
       options.url = url
       beforeCallOption = <RequestArgs> options
     } else if (typeof url === 'string') {
-      let options = new RequestOptions({ url: url })
-      options.headers = new Headers()
-      beforeCallOption = options
+      let newOptions = new RequestOptions({ url: url })
+      newOptions.headers = new Headers()
+      beforeCallOption = newOptions
     } else {
       beforeCallOption = url
     }

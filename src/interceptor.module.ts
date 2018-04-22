@@ -28,7 +28,7 @@ export class InterceptorModule {
   }
 }
 
-export function httpFactory(httpInterceptors: Interceptor[], connectionBackend: XHRBackend, 
+export function httpFactory(httpInterceptors: Interceptor[], connectionBackend: XHRBackend,
     requestOptions: RequestOptions): Http {
   return new CustomHttp(httpInterceptors, connectionBackend, requestOptions)
 }

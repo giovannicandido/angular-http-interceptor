@@ -7,8 +7,8 @@ import { MockBackend, MockConnection } from "@angular/http/testing"
 import { Interceptor } from "./interfaces"
 import { Observable } from "rxjs/Observable"
 import "rxjs/add/observable/empty"
-import { CustomHttp } from ".";
-import { RequestArgs } from "@angular/http/src/interfaces";
+import { CustomHttp } from "."
+import { RequestArgs } from "@angular/http/src/interfaces"
 
 class CustomInterceptorImpl implements Interceptor {
 
@@ -21,7 +21,7 @@ class CustomInterceptorImpl implements Interceptor {
         return Observable.empty()
     }
     after(response: Response) {
-        this.afterResponse = response;
+        this.afterResponse = response
     }
     error(error: any) {
         this.errorCall = error
@@ -34,8 +34,8 @@ class CustomInterceptor3 extends CustomInterceptorImpl {}
 
 let interceptor3 = new CustomInterceptor3()
 
-let fixture: ComponentFixture<AppComponent>;
-let comp: AppComponent;
+let fixture: ComponentFixture<AppComponent>
+let comp: AppComponent
 describe('interceptor-module', function () {
     let interceptor1: CustomInterceptor
     let interceptor2: CustomInterceptor2
@@ -68,10 +68,10 @@ describe('interceptor-module', function () {
             declarations: [AppComponent]
         })
         //   // create component and test fixture
-        fixture = TestBed.createComponent(AppComponent);
+        fixture = TestBed.createComponent(AppComponent)
 
         //   // get test component from the fixture
-        comp = fixture.componentInstance;
+        comp = fixture.componentInstance
     })
 
     it('should inject CustomHttp in hello world component', () => {
@@ -134,10 +134,10 @@ describe('interceptor-module-withInterceptors', function () {
             declarations: [AppComponent]
         })
         //   // create component and test fixture
-        fixture = TestBed.createComponent(AppComponent);
+        fixture = TestBed.createComponent(AppComponent)
 
         //   // get test component from the fixture
-        comp = fixture.componentInstance;
+        comp = fixture.componentInstance
     })
 
     it('should inject CustomHttp in hello world component', () => {
@@ -181,7 +181,7 @@ describe('interceptor-module-accept-multi-false', function () {
                     [{
                         provide: INTERCEPTORS,
                         useValue: interceptor1
-                    },{
+                    }, {
                         provide: Interceptor,
                         useValue: interceptor2
                     }]
@@ -196,10 +196,10 @@ describe('interceptor-module-accept-multi-false', function () {
             declarations: [AppComponent]
         })
         //   // create component and test fixture
-        fixture = TestBed.createComponent(AppComponent);
+        fixture = TestBed.createComponent(AppComponent)
 
         //   // get test component from the fixture
-        comp = fixture.componentInstance;
+        comp = fixture.componentInstance
     })
 
 

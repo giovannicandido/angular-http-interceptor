@@ -4,7 +4,7 @@ import {
   RequestOptions, HttpModule, XHRBackend, Http, ResponseOptions,
   Response, Request, Headers
 } from '@angular/http'
-import { fakeAsync, TestBed, ComponentFixture, inject, tick } from "@angular/core/testing"
+import { fakeAsync, TestBed, inject, tick } from "@angular/core/testing"
 import { MockBackend, MockConnection } from "@angular/http/testing"
 
 import { CustomHttp, Interceptor, InterceptorModule, INTERCEPTORS } from "./index"
@@ -62,9 +62,6 @@ class NullInterceptor implements Interceptor {
     return err
   }
 }
-
-let fixture: ComponentFixture<AppComponent>
-let comp: AppComponent
 let requestOptions = new RequestOptions()
 describe('custom-http', () => {
   let customInterceptor: CustomInterceptor
@@ -102,13 +99,6 @@ describe('custom-http', () => {
         }
       ]
     })
-
-
-    //   // create component and test fixture
-    fixture = TestBed.createComponent(AppComponent)
-
-    //   // get test component from the fixture
-    comp = fixture.componentInstance
 
   })
 
@@ -214,8 +204,8 @@ describe('custom-http', () => {
     it('should pass requestOptions from request to interceptor', fakeAsync(
       inject([Http], (http: CustomHttp) => {
         // With a request
-        
-        let request = new Request({url: 'https://www.google.com.br', headers: new Headers({"MyHeader": "Value"})});
+
+        let request = new Request({url: 'https://www.google.com.br', headers: new Headers({"MyHeader": "Value"})})
         http.request(request)
         tick(100)
         expect(customInterceptor.before).toHaveBeenCalledWith(request)
@@ -225,14 +215,14 @@ describe('custom-http', () => {
       inject([Http], (http: CustomHttp) => {
         // With a request
         let url = 'https://www.google.com.br'
-        let requestOptions = new RequestOptions()
-        requestOptions.body = { json: 'Value' }
-        requestOptions.method = 1
-        requestOptions.headers = new Headers({ "MyHeader": "Value" })
-        http.request(url, requestOptions)
-        requestOptions.url = url
+        let roptions = new RequestOptions()
+        roptions.body = { json: 'Value' }
+        roptions.method = 1
+        roptions.headers = new Headers({ "MyHeader": "Value" })
+        http.request(url, roptions)
+        roptions.url = url
         tick(100)
-        expect(customInterceptor.before).toHaveBeenCalledWith(requestOptions)
+        expect(customInterceptor.before).toHaveBeenCalledWith(roptions)
       })))
   })
 
@@ -276,13 +266,6 @@ describe('custom-http-delay-null-interceptor', () => {
         }
       ]
     })
-
-
-    //   // create component and test fixture
-    fixture = TestBed.createComponent(AppComponent)
-
-    //   // get test component from the fixture
-    comp = fixture.componentInstance
 
   })
 
@@ -359,13 +342,6 @@ describe('custom-http-delay-empty-interceptor', () => {
         }
       ]
     })
-
-
-    //   // create component and test fixture
-    fixture = TestBed.createComponent(AppComponent)
-
-    //   // get test component from the fixture
-    comp = fixture.componentInstance
 
   })
 
